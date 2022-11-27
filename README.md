@@ -1,4 +1,69 @@
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# ggchalkboard
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+The goal of ggchalkboard is to …
+
+## Installation
+
+You can install the released version of ggchalkboard from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("ggchalkboard")
+```
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("EvaMaeRey/ggchalkboard")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library(ggchalkboard)
+## basic example code
+
+library(ggplot2)
+#> Warning: package 'ggplot2' was built under R version 3.6.2
+
+geoms_chalk()
+ggplot(cars) +
+  aes(speed, dist) +
+  geom_point() +
+  theme_chalkboard()
+```
+
+<img src="man/figures/README-example-1.png" width="100%" />
+
+``` r
+
+
+library(ggplot2)
+geoms_chalk()
+ggplot(cars) +
+ aes(speed, dist) +
+ geom_point() +
+ theme_chalkboard_slate()
+```
+
+<img src="man/figures/README-example-2.png" width="100%" /> \# How?
+
+``` r
+the_code <- readLines("R/theme_chalkboard.R")
+```
+
+``` r
+
 #' Title
 #'
 #' @param color
@@ -79,3 +144,4 @@ theme_chalkboard_slate <- function(){
   theme_chalkboard("lightskyblue4", "honeydew")
 
 }
+```
