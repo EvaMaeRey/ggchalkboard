@@ -13,7 +13,7 @@ theme_chalkboard <- function(board_color = "darkseagreen4",
                                    color = board_color),
       text = ggplot2::element_text(color = chalk_color,
                                    face = "italic",
-                                   size = 15),
+                                   size = 18),
       panel.background = ggplot2::element_rect(fill = board_color,
                                                color = board_color),
       axis.text = ggplot2::element_text(color = chalk_color),
@@ -31,13 +31,21 @@ theme_chalkboard <- function(board_color = "darkseagreen4",
 library(ggplot2)
 ggplot(cars) +
   aes(speed, dist) +
-  geom_point() +
-  theme_chalkboard()
+  geom_point() 
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
-Who used a sharpie on the chalkboard\!? Layers should be chalk-like too…
+``` r
+
+last_plot() +
+  theme_chalkboard()
+```
+
+<img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" />
+
+# But who used a sharpie on the chalkboard\!? Layers should be chalk-like too…
+
 We’ll use the ‘update\_geom\_defaults’ function to create a
 geoms\_chalk\_on() function, but before we do that, we anticipate
 wanting to turn that function back off, to do that, we’ll want to save

@@ -28,7 +28,7 @@ theme_chalkboard <- function(board_color = "darkseagreen4",
                                    color = board_color),
       text = ggplot2::element_text(color = chalk_color,
                                    face = "italic",
-                                   size = 15),
+                                   size = 18),
       panel.background = ggplot2::element_rect(fill = board_color,
                                                color = board_color),
       axis.text = ggplot2::element_text(color = chalk_color),
@@ -47,11 +47,15 @@ theme_chalkboard <- function(board_color = "darkseagreen4",
 library(ggplot2)
 ggplot(cars) +
   aes(speed, dist) +
-  geom_point() +
+  geom_point() 
+
+last_plot() +
   theme_chalkboard()
 ```
 
-Who used a sharpie on the chalkboard!? Layers should be chalk-like too…
+# But who used a sharpie on the chalkboard!? Layers should be chalk-like too…
+
+
 We’ll use the ‘update_geom_defaults’ function to create a geoms_chalk_on() function, but before we do that, we anticipate wanting to turn that function back off, to do that, we’ll want to save ggplot2’s defaults. We save these lists as data in our theme package. We’ll use these to create geom_chalk_off().
 
 Someday, this will be easier… But for now… https://github.com/tidyverse/ggplot2/pull/5098
