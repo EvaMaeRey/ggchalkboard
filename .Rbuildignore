@@ -1,4 +1,7 @@
 ^ggchalkboard\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
+<<<<<<< HEAD
 ^data-raw$
+=======
+>>>>>>> 47ec22f9772a5120bb1972ddb306d4eae5bfdb9b
