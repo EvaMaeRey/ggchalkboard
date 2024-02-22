@@ -93,7 +93,7 @@ geoms_chalk_on <- function(color = "lightyellow", fill = color){
   ggplot2::update_geom_defaults("point",   list(colour = color, size = 3.5,    alpha = .75))
   ggplot2::update_geom_defaults("segment", list(colour = color, size = 1.25,   alpha = .75))
   ggplot2::update_geom_defaults("rug",     list(colour = color, size = 1,      alpha = .75))
-  ggplot2::update_geom_defaults("rect",    list(colour = color, size = 1,      alpha = .75))
+  ggplot2::update_geom_defaults("rect",    list(colour = color, fill = color, size = 1,      alpha = .75))
   ggplot2::update_geom_defaults("label",   list(fill = fill, color = "grey35", size = 5))
   
 
@@ -156,6 +156,18 @@ last_plot() +
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+
+``` r
+geoms_chalk_on()
+
+readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-02-20/isc_grants.csv") |>
+  ggplot() + 
+  aes(funded) +
+  geom_histogram() + 
+  theme_chalkboard()
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 # Package this stuff up\!
 
