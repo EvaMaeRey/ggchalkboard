@@ -130,7 +130,6 @@ last_plot()
 
 ``` r
 
-
 geoms_chalk_off()
 
 last_plot() 
