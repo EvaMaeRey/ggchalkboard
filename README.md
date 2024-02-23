@@ -418,11 +418,11 @@ readme2pkg::chunk_to_tests_testthat("test_calc_times_two_works")
 
 ### Bit C. Added a description and author information in the DESCRIPTION file 🚧
 
-### Bit D. Addressed *all* notes, warnings and errors. 🚧 ✅
+### Bit D. Addressed *all* notes, warnings and errors. 🚧
 
 ## Phase 4. Promote to wider audience…
 
-### Bit A. Package website built? 🚧 ✅
+### Bit A. Package website built? ✅
 
 ``` r
 usethis::use_pkgdown()
