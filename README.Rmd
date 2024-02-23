@@ -1,9 +1,9 @@
 ---
-output: 
-  github_document:
-    toc: TRUE
-    toc_depth: 2
+output: github_document
 ---
+
+<!-- toc: TRUE -->
+<!-- toc_depth: 2 -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -19,7 +19,9 @@ library(tidyverse)
 ```
 
 
-# {ggchalkboard} is an example of a ggplot2 extension theme, which features `update_geom_defaults` -- the future is a bit more coordinated!
+# {ggchalkboard} 
+
+ggchalkboard is an example of a ggplot2 extension theme, which works on strategies to get to complementary geom/stat defaults `update_geom_defaults`!  The future looks a bit more coordinated!
 
 I do not consider myself very gifted when it comes to thematic choices in ggplot2.  But thematic choices can be 'make or break' when it comes to audience.  And I do like chalkboards and think I can do a reasonable job mimicking their look.
 
@@ -171,6 +173,72 @@ geoms_chalk_off <- function(){
   ggplot2::update_geom_defaults("label",     default_aes_label)
 
 }
+
+```
+
+
+```{r, echo = F, eval = F}
+cache_geom_defaults <- new.env(parent = emptyenv())
+cache_stats_defaults <- new.env(parent = emptyenv())
+
+#' Modify geom/stat aesthetic defaults for future plots
+#'
+#' @param stat,geom Name of geom/stat to modify (like `"point"` or `"bin"`),
+#'   or a Geom/Stat object (like `GeomPoint` or `StatBin`).
+#' @param new Named list of aesthetics. Alternatively, `NULL` to reset the
+#'   defaults.
+#' @keywords internal
+#' @name update_defaults
+#' @export
+#' @examples
+#' # updating a geom's default aesthetic settings
+#' # example: change geom_point()'s default color
+#' GeomPoint$default_aes
+#' update_geom_defaults("point", aes(color = "red"))
+#' GeomPoint$default_aes
+#' ggplot(mtcars, aes(mpg, wt)) + geom_point()
+#'
+#' # Reset defaults by using `new = NULL`
+#' update_geom_defaults("point", NULL)
+#'
+#' # updating a stat's default aesthetic settings
+#' # example: change stat_bin()'s default y-axis to the density scale
+	@@ -29,27 +31,63 @@
+#'   geom_function(fun = dnorm, color = "red")
+#'
+#' # reset default
+#' update_stat_defaults("bin", NULL)
+
+#' @rdname update_defaults
+dev_update_geom_defaults <- function(geom, new) {
+  if (is.null(new)) {
+
+    vec_assert(geom, character(), 1)
+    old <- cache_geom_defaults[[geom]]
+    if (!is.null(old)) {
+      new <- update_geom_defaults(geom, old)
+      env_unbind(cache_geom_defaults, geom)
+    }
+    invisible(new)
+
+  } else {
+
+    g <- check_subclass(geom, "Geom", env = parent.frame())
+    old <- g$default_aes
+    # Only update cache the first time
+    if (!geom %in% ls(cache_geom_defaults)) {
+      cache_geom_defaults[[geom]] <- old
+    }
+    new <- rename_aes(new)
+    new_names_order <- unique(c(names(old), names(new)))
+    new <- defaults(new, old)[new_names_order]
+    g$default_aes[names(new)] <- new
+    invisible(old)
+
+  }
+}
+
+
 
 ```
 

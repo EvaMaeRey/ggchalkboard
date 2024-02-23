@@ -1,27 +1,15 @@
 
-  - [{ggchalkboard} is an example of a ggplot2 extension theme, which
-    features `update_geom_defaults` – the future is a bit more
-    coordinated\!](#ggchalkboard-is-an-example-of-a-ggplot2-extension-theme-which-features-update_geom_defaults--the-future-is-a-bit-more-coordinated)
-      - [Using `update_geom_defaults` for matching geom/stat layers look
-        and feel of to new
-        theme](#using-update_geom_defaults-for-matching-geomstat-layers-look-and-feel-of-to-new-theme)
-  - [Part II. Packaging and documentation
-    🚧](#part-ii-packaging-and-documentation-)
-      - [Phase 1. Minimal working
-        package](#phase-1-minimal-working-package)
-      - [Phase 2: Listen & iterate 🚧](#phase-2-listen--iterate-)
-      - [Phase 3: Let things settle](#phase-3-let-things-settle)
-      - [Phase 4. Promote to wider
-        audience…](#phase-4-promote-to-wider-audience)
-      - [Phase 5: Harden/commit](#phase-5-hardencommit)
-  - [Appendix: Reports, Environment](#appendix-reports-environment)
-      - [Edit Description file](#edit-description-file)
-      - [Environment](#environment)
-      - [`devtools::check()` report](#devtoolscheck-report)
+<!-- toc: TRUE -->
+
+<!-- toc_depth: 2 -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# {ggchalkboard} is an example of a ggplot2 extension theme, which features `update_geom_defaults` – the future is a bit more coordinated\!
+# {ggchalkboard}
+
+ggchalkboard is an example of a ggplot2 extension theme, which works on
+strategies to get to complementary geom/stat defaults
+`update_geom_defaults`\! The future looks a bit more coordinated\!
 
 I do not consider myself very gifted when it comes to thematic choices
 in ggplot2. But thematic choices can be ‘make or break’ when it comes to
@@ -233,7 +221,7 @@ geoms_chalk_on()
 last_plot()
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 Very nice\! The points match the look and feel of the theme a lot
 better. Okay, and let’s check that we can turn the new defaults back
@@ -245,7 +233,7 @@ geoms_chalk_off()
 last_plot() 
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 Great, it’s working\!
 
@@ -275,7 +263,7 @@ last_plot() +
   ggxmean:::geom_lm_residuals()
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 Further coordination can be done when it comes to scales:
 
@@ -295,7 +283,7 @@ ggplot(data = cars) +
   scale_size_chalkboard()
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
