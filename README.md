@@ -24,9 +24,9 @@
 # {ggchalkboard} is an example of a ggplot2 extension theme, which features `update_geom_defaults` – the future is a bit more coordinated\!
 
 I do not consider myself very gifted when it comes to thematic choices
-in ggplot2. But I know that thematic choices can be ‘make or break’ when
-it comes to audience. And I do like chalkboards and think I can do a
-reasonable job mimicking their look.
+in ggplot2. But thematic choices can be ‘make or break’ when it comes to
+audience. And I do like chalkboards and think I can do a reasonable job
+mimicking their look.
 
 This in-progress theme extension package tries to capture some best
 practices for creating theme extensions. Unfortunately, due to my
