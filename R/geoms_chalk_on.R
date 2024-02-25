@@ -3,6 +3,7 @@ geoms_chalk_on <- function(chalk_color = "lightyellow", color = NULL, fill = NUL
   if(is.null(color)){color <- chalk_color}
   if(is.null(fill)){fill <- chalk_color}
 
+  
   ggplot2::update_geom_defaults("point",   list(colour = color, size = 3.5,    alpha = .75))
   ggplot2::update_geom_defaults("segment", list(colour = color, size = 1.25,   alpha = .75))
   ggplot2::update_geom_defaults("rug",     list(colour = color, size = 1,      alpha = .75))
@@ -11,10 +12,13 @@ geoms_chalk_on <- function(chalk_color = "lightyellow", color = NULL, fill = NUL
   
 
   # above is pretty limited... think more generally...  
+  # the problem with this is that you might want at least as many defaults as base ggplot2.  
+  # for example fill colors are grey35, grey20 and white in base ggplot2.  
+  # These are pretty good defaults.. So we favor Torsten Sprenger's approach...
   # https://stackoverflow.com/questions/21174625/ggplot-how-to-set-default-color-for-all-geoms
   # params <- ls(pattern = '^geom_', env = as.environment('package:ggplot2'))
   # geoms <- gsub("geom_", "", params)
-  #
+  # 
   # lapply(geoms, update_geom_defaults, list(colour = color))
   # lapply(geoms, update_geom_defaults, list(fill = fill))
 

@@ -185,6 +185,7 @@ geoms_chalk_on <- function(chalk_color = "lightyellow", color = NULL, fill = NUL
   if(is.null(color)){color <- chalk_color}
   if(is.null(fill)){fill <- chalk_color}
 
+  
   ggplot2::update_geom_defaults("point",   list(colour = color, size = 3.5,    alpha = .75))
   ggplot2::update_geom_defaults("segment", list(colour = color, size = 1.25,   alpha = .75))
   ggplot2::update_geom_defaults("rug",     list(colour = color, size = 1,      alpha = .75))
@@ -193,15 +194,20 @@ geoms_chalk_on <- function(chalk_color = "lightyellow", color = NULL, fill = NUL
   
 
   # above is pretty limited... think more generally...  
+  # the problem with this is that you might want at least as many defaults as base ggplot2.  
+  # for example fill colors are grey35, grey20 and white in base ggplot2.  
+  # These are pretty good defaults.. So we favor Torsten Sprenger's approach...
   # https://stackoverflow.com/questions/21174625/ggplot-how-to-set-default-color-for-all-geoms
   # params <- ls(pattern = '^geom_', env = as.environment('package:ggplot2'))
   # geoms <- gsub("geom_", "", params)
-  #
+  # 
   # lapply(geoms, update_geom_defaults, list(colour = color))
   # lapply(geoms, update_geom_defaults, list(fill = fill))
 
 }
 ```
+
+### first attempt - limited
 
 ``` r
 geoms_chalk_off <- function(){
@@ -213,6 +219,159 @@ geoms_chalk_off <- function(){
   ggplot2::update_geom_defaults("label",     default_aes_label)
 
 }
+```
+
+### Second attempt
+
+``` r
+library(ggplot2)
+library(purrr)
+
+geom_aes_defaults <- function() {
+  geom_names <- apropos("^Geom", ignore.case = FALSE)
+  geoms <- mget(geom_names, env = asNamespace("ggplot2"))
+  map(geoms, ~ .$default_aes)
+}
+
+# geom_aes_defaults()
+cache_geoms_default_aes <- geom_aes_defaults()
+# str(cache_geoms_default_aes)
+# names(cache_geoms_default_aes)
+```
+
+``` r
+
+geoms_chalk_off <- function(){
+  
+i = 1  
+  
+Geom$default_aes               <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomAbline$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomAnnotationMap$default_aes  <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomArea$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomBar$default_aes            <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomBlank$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomBoxplot$default_aes        <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomCol$default_aes            <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomContour$default_aes        <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomContourFilled$default_aes  <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomCrossbar$default_aes       <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomCurve$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomCustomAnn$default_aes      <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomDensity$default_aes        <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomDensity2d$default_aes      <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomDensity2dFilled$default_aes<- cache_geoms_default_aes[[i]]; i <- i+1
+GeomDotplot$default_aes        <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomErrorbar$default_aes       <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomErrorbarh$default_aes      <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomFunction$default_aes       <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomHex$default_aes            <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomHline$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomLabel$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomLine$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomLinerange$default_aes      <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomLogticks$default_aes       <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomMap$default_aes            <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomPath$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomPoint$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomPointrange$default_aes     <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomPolygon$default_aes        <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomQuantile$default_aes       <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomRaster$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomRasterAnn$default_aes      <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomRect$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomRibbon$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomRug$default_aes            <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomSegment$default_aes        <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomSf$default_aes             <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomSmooth$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomSpoke$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomStep$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomText$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomTile$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomViolin$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
+GeomVline$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
+
+  
+  
+  
+} 
+```
+
+``` r
+geoms_chalk_off()
+```
+
+# this is dev version of update\_geom\_defaults
+
+``` r
+replace_geom_aes_defaults <- function(name, old_aes, new_aes) {
+  
+  matching_geoms <- 
+    map(geom_aes_defaults(), name) %>%
+      compact() %>%
+      keep(~ !is.na(.) & . == old_aes)
+  
+  geoms <- gsub("^Geom(.*)", "\\1", names(matching_geoms))
+  
+  walk(geoms, update_geom_defaults, setNames(list(new_aes), name))
+  
+}
+
+geoms_chalk_on <- function(chalk_color = "lightyellow",
+                           board_color = "darkseagreen4",
+                           new_black = chalk_color, 
+                           new_grey20 = chalk_color, 
+                           new_grey35 = chalk_color,
+                           new_white = board_color,
+                           new_linewidth0.5 = 1, 
+                           new_linewidth0.1 = .3,
+                           new_alpha = .65, 
+                           new_linetype = 1,
+                           new_size1.5 = 4,
+                           new_size0.5 = 1.25,
+                           new_stroke0.5 = 1){
+  
+  geoms_chalk_off()
+
+# replace_geom_aes_defaults("colour", "black", new_black)
+# replace_geom_aes_defaults("fill", "black", new_black)
+
+# replace_geom_aes_defaults("colour", "white", new_white)
+# replace_geom_aes_defaults("fill", "white", new_white)
+
+# replace_geom_aes_defaults("colour", "grey20", new_grey20)
+# replace_geom_aes_defaults("fill", "grey20", new_grey20)
+# 
+# replace_geom_aes_defaults("colour", "grey35", new_grey35)
+# replace_geom_aes_defaults("fill", "grey35", new_grey35)
+
+replace_geom_aes_defaults("colour", "black", ggplot2::alpha(new_black, new_alpha))
+replace_geom_aes_defaults("fill", "black", ggplot2::alpha(new_black, new_alpha))
+
+replace_geom_aes_defaults("colour", "white", ggplot2::alpha(new_white, new_alpha))
+replace_geom_aes_defaults("fill", "white", ggplot2::alpha(new_white, new_alpha))
+
+replace_geom_aes_defaults("colour", "grey20", ggplot2::alpha(new_grey20, new_alpha))
+replace_geom_aes_defaults("fill", "grey20", ggplot2::alpha(new_grey20, new_alpha))
+
+replace_geom_aes_defaults("colour", "grey35", ggplot2::alpha(new_grey35, new_alpha))
+replace_geom_aes_defaults("fill", "grey35", ggplot2::alpha(new_grey35, new_alpha))
+
+replace_geom_aes_defaults("linewidth", 0.5, new_linewidth0.5)
+replace_geom_aes_defaults("linewidth", 0.1, new_linewidth0.1)
+
+replace_geom_aes_defaults("alpha", 1, new_alpha)
+
+replace_geom_aes_defaults("linetype", 1, new_linetype)
+replace_geom_aes_defaults("size", 1.5, new_size1.5)
+replace_geom_aes_defaults("size", 0.5, new_size0.5)
+replace_geom_aes_defaults("stroke", 0.5, new_stroke0.5)
+
+
+}
+
+geoms_chalk_on()
 ```
 
 **Another big revision is to work on generalizing this. I know I’ve just
@@ -227,7 +386,7 @@ geoms_chalk_on()
 last_plot()
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 Very nice\! The points match the look and feel of the theme a lot
 better. Okay, and let’s check that we can turn the new defaults back
@@ -239,7 +398,7 @@ geoms_chalk_off()
 last_plot() 
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 Great, it’s working\!
 
@@ -269,7 +428,7 @@ last_plot() +
   ggxmean:::geom_lm_residuals()
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 Further coordination can be done when it comes to scales:
 
@@ -289,7 +448,7 @@ ggplot(data = cars) +
   scale_size_chalkboard()
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
