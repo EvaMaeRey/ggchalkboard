@@ -34,7 +34,8 @@ example that geom\_point(), being which is defined by the GeomPoint
 proto object has the following default aesthetics.
 
 ``` r
-ggplot2::GeomPoint$default_aes
+library(ggplot2)
+GeomPoint$default_aes
 #> Aesthetic mapping: 
 #> * `shape`  -> 19
 #> * `colour` -> "black"
@@ -45,10 +46,12 @@ ggplot2::GeomPoint$default_aes
 ```
 
 These are sensible starting points. Surely people would question default
-color choice of ‘burlywood4’. But ‘black’ color and 1.5 size defaults
-may look less sensible in the context of a great theme that you’ve
-constructed. So we are going to tackle that with
-`update_geom_defaults()` can be used to complement a new theme function.
+color choice of ‘burlywood4’.
+
+But ‘black’ color and 1.5 size defaults may look less sensible in the
+context of a great theme that you’ve constructed. So we are going to
+tackle that with `update_geom_defaults()` can be used to complement a
+new theme function.
 
 But let’s not get ahead of ourselves. Let’s start creating by creating
 theme\_chalkboard, which is likely to be familiar as it is a ggplot2
@@ -127,6 +130,8 @@ This looks pretty good to me\! But … who used a sharpie on the
 chalkboard\!? Layers (geoms\_\* and stats\_\*) should be chalk-like too…
 
 ## Using `update_geom_defaults` for matching geom/stat layers look and feel of to new theme
+
+### First, experimental cut
 
 We’ll use the ‘update\_geom\_defaults’ function to create a
 geoms\_chalk\_on() function, but before we do that, we anticipate
@@ -207,8 +212,6 @@ geoms_chalk_on <- function(chalk_color = "lightyellow", color = NULL, fill = NUL
 }
 ```
 
-### first attempt - limited
-
 ``` r
 geoms_chalk_off <- function(){
 
@@ -221,7 +224,36 @@ geoms_chalk_off <- function(){
 }
 ```
 
-### Second attempt
+Okay\! Let’s see our geoms\_chalk\_on in action.
+
+``` r
+geoms_chalk_on()
+
+last_plot()
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+Very nice\! The points match the look and feel of the theme a lot
+better. Okay, and let’s check that we can turn the new defaults back
+off.
+
+``` r
+geoms_chalk_off()
+
+last_plot() 
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+
+### Second cut
+
+We just handled a few of the frequently used geoms in our first cut. Now
+let’s look more holistically. We’ll use some Torsten Sprenger
+contributed code to a stack overflow question. First he has a routine to
+look at all the default\_aes for ggplot2 geoms.
+
+We’ll save this as cache\_geoms\_default\_aes.
 
 ``` r
 library(ggplot2)
@@ -235,9 +267,10 @@ geom_aes_defaults <- function() {
 
 # geom_aes_defaults()
 cache_geoms_default_aes <- geom_aes_defaults()
-# str(cache_geoms_default_aes)
-# names(cache_geoms_default_aes)
 ```
+
+The we have this routine to restore geoms to their original default
+aesthetics. Hooray\! Yes, the implementation is currently verbose\! 🤷
 
 ``` r
 
@@ -245,9 +278,9 @@ geoms_chalk_off <- function(){
   
 i = 1  
   
-Geom$default_aes               <- cache_geoms_default_aes[[i]]; i <- i+1
-GeomAbline$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
-GeomAnnotationMap$default_aes  <- cache_geoms_default_aes[[i]]; i <- i+1
+Geom$default_aes               <- cache_geoms_default_aes[["Geom"]]; i <- i+1
+GeomAbline$default_aes         <- cache_geoms_default_aes[["GeomAbline"]]; i <- i+1
+GeomAnnotationMap$default_aes  <- cache_geoms_default_aes[["AnnotationMap"]]; i <- i+1
 GeomArea$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
 GeomBar$default_aes            <- cache_geoms_default_aes[[i]]; i <- i+1
 GeomBlank$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
@@ -291,18 +324,15 @@ GeomText$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
 GeomTile$default_aes           <- cache_geoms_default_aes[[i]]; i <- i+1
 GeomViolin$default_aes         <- cache_geoms_default_aes[[i]]; i <- i+1
 GeomVline$default_aes          <- cache_geoms_default_aes[[i]]; i <- i+1
-
-  
-  
   
 } 
 ```
 
-``` r
-geoms_chalk_off()
-```
-
-# this is dev version of update\_geom\_defaults
+Then we’ll use another Torsten Sprenger solution which I think gets at
+what people probably really want for theme and layer visual harmony.
+This allows us to go in and change out **values** across geoms. So we
+can say things like `new_black = "orange"`. The update\_geom\_default
+from ggplot2 is doing some heavy lifting for us too.
 
 ``` r
 replace_geom_aes_defaults <- function(name, old_aes, new_aes) {
@@ -317,7 +347,23 @@ replace_geom_aes_defaults <- function(name, old_aes, new_aes) {
   walk(geoms, update_geom_defaults, setNames(list(new_aes), name))
   
 }
+```
 
+We’ll put Sprenger’s replace\_geom\_aes\_defaults into a user-facing
+function geoms\_chalk\_on. In this function, you can follow on all the
+thoughtful decision making that was made in base ggplot2 in terms of
+variety of color to make a compelling plot. For example ggplot2 uses
+black but also two (maybe more) shades of gray. The chalk on function
+invites you to think about replacements for each of these values.
+
+There’s a little bit of danger to this approach in that you are changing
+defaults throughout, and then you might base a new change on a minor
+change. I’m not expressing this well, but say you’re new black color is
+‘white’, an then your new “white” color is ‘magenta’, you’ll get
+magenta throughout, I think. Darn that is a sad state of affairs, but
+I’m not going to worry about it for now.
+
+``` r
 geoms_chalk_on <- function(chalk_color = "lightyellow",
                            board_color = "darkseagreen4",
                            new_black = chalk_color, 
@@ -332,19 +378,7 @@ geoms_chalk_on <- function(chalk_color = "lightyellow",
                            new_size0.5 = 1.25,
                            new_stroke0.5 = 1){
   
-  geoms_chalk_off()
-
-# replace_geom_aes_defaults("colour", "black", new_black)
-# replace_geom_aes_defaults("fill", "black", new_black)
-
-# replace_geom_aes_defaults("colour", "white", new_white)
-# replace_geom_aes_defaults("fill", "white", new_white)
-
-# replace_geom_aes_defaults("colour", "grey20", new_grey20)
-# replace_geom_aes_defaults("fill", "grey20", new_grey20)
-# 
-# replace_geom_aes_defaults("colour", "grey35", new_grey35)
-# replace_geom_aes_defaults("fill", "grey35", new_grey35)
+geoms_chalk_off()  # restore defaults, so that we are working from the default values
 
 replace_geom_aes_defaults("colour", "black", ggplot2::alpha(new_black, new_alpha))
 replace_geom_aes_defaults("fill", "black", ggplot2::alpha(new_black, new_alpha))
@@ -370,13 +404,7 @@ replace_geom_aes_defaults("stroke", 0.5, new_stroke0.5)
 
 
 }
-
-geoms_chalk_on()
 ```
-
-**Another big revision is to work on generalizing this. I know I’ve just
-selected a handful of important Geoms, but soon enough, we’ll see
-mismatching**
 
 Okay\! Let’s see our geoms\_chalk\_on in action.
 
@@ -386,7 +414,7 @@ geoms_chalk_on()
 last_plot()
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 Very nice\! The points match the look and feel of the theme a lot
 better. Okay, and let’s check that we can turn the new defaults back
@@ -398,9 +426,77 @@ geoms_chalk_off()
 last_plot() 
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 Great, it’s working\!
+
+### Future cut, use dev version of update\_geom\_defaults?
+
+Here’s a copy paste of this code…
+
+``` r
+cache_geom_defaults <- new.env(parent = emptyenv())
+cache_stats_defaults <- new.env(parent = emptyenv())
+
+#' Modify geom/stat aesthetic defaults for future plots
+#'
+#' @param stat,geom Name of geom/stat to modify (like `"point"` or `"bin"`),
+#'   or a Geom/Stat object (like `GeomPoint` or `StatBin`).
+#' @param new Named list of aesthetics. Alternatively, `NULL` to reset the
+#'   defaults.
+#' @keywords internal
+#' @name update_defaults
+#' @export
+#' @examples
+#' # updating a geom's default aesthetic settings
+#' # example: change geom_point()'s default color
+#' GeomPoint$default_aes
+#' update_geom_defaults("point", aes(color = "red"))
+#' GeomPoint$default_aes
+#' ggplot(mtcars, aes(mpg, wt)) + geom_point()
+#'
+#' # Reset defaults by using `new = NULL`
+#' update_geom_defaults("point", NULL)
+#'
+#' # updating a stat's default aesthetic settings
+#' # example: change stat_bin()'s default y-axis to the density scale
+    @@ -29,27 + 31,63 @@
+#'   geom_function(fun = dnorm, color = "red")
+#'
+#' # reset default
+#' update_stat_defaults("bin", NULL)
+
+#' @rdname update_defaults
+dev_update_geom_defaults <- function(geom, new) {
+  if (is.null(new)) {
+
+    vec_assert(geom, character(), 1)
+    old <- cache_geom_defaults[[geom]]
+    if (!is.null(old)) {
+      new <- update_geom_defaults(geom, old)
+      env_unbind(cache_geom_defaults, geom)
+    }
+    invisible(new)
+
+  } else {
+
+    g <- check_subclass(geom, "Geom", env = parent.frame())
+    old <- g$default_aes
+    # Only update cache the first time
+    if (!geom %in% ls(cache_geom_defaults)) {
+      cache_geom_defaults[[geom]] <- old
+    }
+    new <- rename_aes(new)
+    new_names_order <- unique(c(names(old), names(new)))
+    new <- defaults(new, old)[new_names_order]
+    g$default_aes[names(new)] <- new
+    invisible(old)
+
+  }
+}
+```
+
+# Derivitive functions: slate chalkboard
 
 While we are here, let’s write a couple of derivative functions for a
 slightly different chalkboard look.
@@ -428,7 +524,7 @@ last_plot() +
   ggxmean:::geom_lm_residuals()
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 Further coordination can be done when it comes to scales:
 
@@ -448,7 +544,7 @@ ggplot(data = cars) +
   scale_size_chalkboard()
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
 
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
