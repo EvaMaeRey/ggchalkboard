@@ -11,14 +11,17 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 # {ggchalkboard}
 
 ggchalkboard is a teaching package. It shows examples of how to extend
-ggplot2 themes w/ version 3.5.1.9000, which has some significant
-updates!
+ggplot2 themes with version 3.5.1.9000, which has some significant
+updates - layers (geom\_ and stat\_) colors can be updated within the
+theme!
 
-I do not consider myself very gifted when it comes to thematic choices
-in ggplot2. But thematic choices can be ‘make or break’ when it comes to
-audience. I do like chalkboards and think I can do a reasonable job
+Thematic choices can be ‘make or break’ when it comes to audience. I
+don’t consider myself gifted when it comes to thematic choices in
+ggplot2, but I do like chalkboards and think we can do a reasonable job
 mimicking their look and that more gifted themers might learn from these
-efforts.
+efforts! Using the chalkboard theme and its family should say to the
+audience, ‘it’s safe to ask questions about this plot; we’re in the
+learning phase’
 
 I welcome feedback on the thematic or coding choices.
 
@@ -34,14 +37,23 @@ at the length of the list object returned by `ggplot2::theme_gray()`
 
 ``` r
 ggplot2::theme_gray() |> length()
-#> [1] 139
+#> [1] 144
 ```
 
 So let’s get to writing our theme, `theme_chalkboard`.
 
 ``` r
+theme_classic %>% args()
+#> function (base_size = 11, base_family = "", header_family = NULL, 
+#>     base_line_size = base_size/22, base_rect_size = base_size/22, 
+#>     ink = "black", paper = "white") 
+#> NULL
+```
+
+``` r
 theme_classic <- ggplot2::theme_classic
 
+#' @export
 theme_chalkboard <- function(paper = "darkseagreen4",
                              ink = alpha("lightyellow", .6),
                              accent = alpha("orange", 1),
@@ -49,8 +61,14 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              base_theme = theme_classic,
                       ...){
   
-  base_theme(paper = paper, ink = ink, base_size = base_size, ...) + 
-    theme(geom = element_geom(accent = accent))
+  base_theme(paper = paper, 
+             ink = ink, 
+             base_size = base_size, 
+             ...) +
+    theme(geom = element_geom(accent = accent), 
+          text = element_text(face = "plain"),
+          plot.title.position = "plot"
+          )
   
 }
 ```
@@ -60,28 +78,48 @@ library(tidyverse)
 ggplot(cars) + 
   aes(speed, dist) + 
   geom_point() + 
-  geom_smooth()
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
-```
-
-``` r
+  geom_smooth() + 
+  labs(y = "distance") +
+  labs(title = "Default ggplot2 theme")
 
 last_plot() + 
-  theme_chalkboard()
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+  theme_chalkboard() + 
+  labs(title = "New theme demonstration")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="49%" /><img src="man/figures/README-unnamed-chunk-4-2.png" width="49%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="49%" /><img src="man/figures/README-unnamed-chunk-5-2.png" width="49%" />
 
 ``` r
-theme_blackboard <- function(paper = "grey27",
+theme %>% args() %>% head()
+#>                                                                                 
+#> 1 function (..., line, rect, text, title, point, polygon, geom,                 
+#> 2     spacing, margins, aspect.ratio, axis.title, axis.title.x,                 
+#> 3     axis.title.x.top, axis.title.x.bottom, axis.title.y, axis.title.y.left,   
+#> 4     axis.title.y.right, axis.text, axis.text.x, axis.text.x.top,              
+#> 5     axis.text.x.bottom, axis.text.y, axis.text.y.left, axis.text.y.right,     
+#> 6     axis.text.theta, axis.text.r, axis.ticks, axis.ticks.x, axis.ticks.x.top,
+```
+
+<https://evamaerey.github.io/ggplot2_grammar_guide/themes.html#56>
+
+``` r
+element_geom %>% args()
+#> function (ink = NULL, paper = NULL, accent = NULL, linewidth = NULL, 
+#>     borderwidth = NULL, linetype = NULL, bordertype = NULL, family = NULL, 
+#>     fontsize = NULL, pointsize = NULL, pointshape = NULL) 
+#> NULL
+```
+
+``` r
+#' @export
+theme_blackboard <- function(paper = "grey20",
                              ink = alpha("whitesmoke", .6),
                              accent = alpha("palevioletred3", .8),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = theme_chalkboard,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -90,20 +128,20 @@ theme_blackboard <- function(paper = "grey27",
 ``` r
 last_plot() + 
   theme_blackboard()
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 ``` r
+#' @export
 theme_slateboard <- function(paper = "lightskyblue4",
                              ink = alpha("whitesmoke", .6),
                              accent = alpha("palevioletred3", .8),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = theme_chalkboard,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -112,20 +150,22 @@ theme_slateboard <- function(paper = "lightskyblue4",
 ``` r
 last_plot() +
   theme_slateboard()
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
 ``` r
+#' @export
 theme_whiteboard <- function(paper = "white",
-                             ink = alpha("darkslateblue", .9),
+                             ink = alpha("black", .9),
                              accent = alpha("darkred", .9),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = ggplot2::theme_classic,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, 
+             ink = ink, 
+             base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -134,20 +174,20 @@ theme_whiteboard <- function(paper = "white",
 ``` r
 last_plot() +
   theme_whiteboard()
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ``` r
+#' @export
 theme_glassboard <- function(paper = alpha("white", 0),
-                             ink = alpha("midnightblue", .9),
+                             ink = alpha("black", .9),
                              accent = alpha("darkred", .9),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = ggplot2::theme_classic,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -156,10 +196,96 @@ theme_glassboard <- function(paper = alpha("white", 0),
 ``` r
 last_plot() +
   theme_glassboard()
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+
+# check for colorblindness…
+
+``` r
+# remotes::install_github("clauswilke/colorblindr")
+colorblindr::cvd_grid(last_plot())
+```
+
+<div class="figure">
+
+<img src="man/figures/README-unnamed-chunk-12-1.png" alt="A test with colorblindr" width="100%" />
+<p class="caption">
+A test with colorblindr
+</p>
+
+</div>
+
+# What can be done about layer from a ggplot2 extension that has hard coded aesthetic defaults?
+
+``` r
+library(ggplot2)
+library(ggalluvial)
+
+GeomStratum$default_aes # hardcoded
+#> Aesthetic mapping: 
+#> * `size`      -> 0.5
+#> * `linewidth` -> 0.5
+#> * `linetype`  -> 1
+#> * `colour`    -> "black"
+#> * `fill`      -> "white"
+#> * `alpha`     -> 1
+
+titanic_flat <- data.frame(Titanic)
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+```
+
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+
+``` r
+
+# Step 1.  Look at dynamic default aes from base ggplot2 for reference
+GeomRect$default_aes
+#> Aesthetic mapping: 
+#> * `colour`    -> NA
+#> * `fill`      -> `from_theme(col_mix(ink, paper, 0.35))`
+#> * `linewidth` -> `from_theme(borderwidth)`
+#> * `linetype`  -> `from_theme(bordertype)`
+#> * `alpha`     -> NA
+
+# Step 2. Update defaults as required.
+GeomStratum$default_aes <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15)),
+                               fill = from_theme(ggplot2:::col_mix(ink, paper, 0.35)),
+                               linewidth = from_theme(borderwidth),
+                               linetype = from_theme(bordertype),
+                               alpha = NA)
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+```
+
+<img src="man/figures/README-unnamed-chunk-13-2.png" width="100%" />
+
+``` r
+
+# An in-script, alternative could look like this
+GeomStratum$default_aes <- modifyList(GeomRect$default_aes, 
+                                      aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15))))
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+```
+
+<img src="man/figures/README-unnamed-chunk-13-3.png" width="100%" />
 
 Further coordination can be done when it comes to scales:
 
@@ -177,7 +303,7 @@ ggplot(data = cars) +
   scale_size_chalkboard()
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
@@ -214,47 +340,29 @@ Use new {readme2pkg} function to do this from readme…
 
 ``` r
 knitrExtra::chunk_names_get()
-#> It seems you are currently knitting a Rmd/Qmd file. The parsing of the file will be done in a new R session.
 #>  [1] "unnamed-chunk-1"           "unnamed-chunk-2"          
-#>  [3] "unnamed-chunk-3"           "theme_chalkboard"         
-#>  [5] "unnamed-chunk-4"           "theme_blackboard"         
-#>  [7] "unnamed-chunk-5"           "theme_slateboard"         
-#>  [9] "unnamed-chunk-6"           "theme_whiteboard"         
-#> [11] "unnamed-chunk-7"           "theme_glassboard"         
-#> [13] "unnamed-chunk-8"           "unnamed-chunk-9"          
-#> [15] "unnamed-chunk-10"          "unnamed-chunk-11"         
+#>  [3] "unnamed-chunk-3"           "unnamed-chunk-4"          
+#>  [5] "theme_chalkboard"          "unnamed-chunk-5"          
+#>  [7] "unnamed-chunk-6"           "unnamed-chunk-7"          
+#>  [9] "theme_blackboard"          "unnamed-chunk-8"          
+#> [11] "theme_slateboard"          "unnamed-chunk-9"          
+#> [13] "theme_whiteboard"          "unnamed-chunk-10"         
+#> [15] "theme_glassboard"          "unnamed-chunk-11"         
 #> [17] "unnamed-chunk-12"          "unnamed-chunk-13"         
 #> [19] "unnamed-chunk-14"          "unnamed-chunk-15"         
 #> [21] "unnamed-chunk-16"          "unnamed-chunk-17"         
-#> [23] "test_calc_times_two_works" "unnamed-chunk-18"         
-#> [25] "unnamed-chunk-19"          "unnamed-chunk-20"         
-#> [27] "unnamed-chunk-21"          "unnamed-chunk-22"
-```
-
-``` r
+#> [23] "unnamed-chunk-18"          "unnamed-chunk-19"         
+#> [25] "unnamed-chunk-20"          "unnamed-chunk-21"         
+#> [27] "unnamed-chunk-22"          "test_calc_times_two_works"
+#> [29] "unnamed-chunk-23"          "unnamed-chunk-24"         
+#> [31] "unnamed-chunk-25"          "unnamed-chunk-26"         
+#> [33] "unnamed-chunk-27"
 library(tidyverse)
 knitrExtra:::chunk_to_r("theme_chalkboard")
-#> It seems you are currently knitting a Rmd/Qmd file. The parsing of the file will be done in a new R session.
-```
-
-``` r
 knitrExtra:::chunk_to_r("theme_blackboard")
-#> It seems you are currently knitting a Rmd/Qmd file. The parsing of the file will be done in a new R session.
-```
-
-``` r
 knitrExtra:::chunk_to_r("theme_whiteboard")
-#> It seems you are currently knitting a Rmd/Qmd file. The parsing of the file will be done in a new R session.
-```
-
-``` r
 knitrExtra:::chunk_to_r("theme_slateboard")
-#> It seems you are currently knitting a Rmd/Qmd file. The parsing of the file will be done in a new R session.
-```
-
-``` r
 knitrExtra:::chunk_to_r("theme_glassboard")
-#> It seems you are currently knitting a Rmd/Qmd file. The parsing of the file will be done in a new R session.
 ```
 
 ### Bit E. Run `devtools::check()` and addressed errors. 🚧 ✅
@@ -263,10 +371,10 @@ knitrExtra:::chunk_to_r("theme_glassboard")
 devtools::check(pkg = ".")
 ```
 
-### Bit F. Build package 🚧 ✅
+### Bit F. Install package 🚧 ✅
 
 ``` r
-devtools::build()
+devtools::install(pkg = ".", upgrade = "never") 
 ```
 
 ### Bit G. Write traditional README that uses built package (also serves as a test of build. ✅
@@ -290,15 +398,6 @@ ggplot(data = cars) +
   aes(x = speed) + 
   geom_histogram() + 
   ggchalkboard:::theme_chalkboard()
-
-ggchalkboard:::geoms_chalk_on()
-
-last_plot()
-
-
-ggchalkboard:::geoms_chalk_off()
-
-last_plot()
 ```
 
 ### Bit H. Chosen a license? ✅
@@ -401,8 +500,8 @@ all[11:20]
 #>  [6] "[1] stats     graphics  grDevices utils     datasets  methods   base     "       
 #>  [7] ""                                                                                
 #>  [8] "other attached packages:"                                                        
-#>  [9] " [1] lubridate_1.9.3    forcats_1.0.0      stringr_1.5.1      dplyr_1.1.4       "
-#> [10] " [5] purrr_1.0.2        readr_2.1.5        tidyr_1.3.1        tibble_3.2.1      "
+#>  [9] " [1] ggalluvial_0.12.5  lubridate_1.9.3    forcats_1.0.0      stringr_1.5.1     "
+#> [10] " [5] dplyr_1.1.4        purrr_1.0.2        readr_2.1.5        tidyr_1.3.1       "
 ```
 
 ## `devtools::check()` report

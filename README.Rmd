@@ -16,7 +16,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  warning = F,
+  message = F
 )
 
 library(tidyverse)
@@ -25,9 +27,9 @@ library(tidyverse)
 
 # {ggchalkboard} 
 
-ggchalkboard is a teaching package. It shows examples of how to extend ggplot2 themes w/ version 3.5.1.9000, which has some significant updates!
+ggchalkboard is a teaching package. It shows examples of how to extend ggplot2 themes with version 3.5.1.9000, which has some significant updates - layers (geom_ and stat_) colors can be updated within the theme!
 
-I do not consider myself very gifted when it comes to thematic choices in ggplot2.  But thematic choices can be 'make or break' when it comes to audience.  I do like chalkboards and think I can do a reasonable job mimicking their look and that more gifted themers might learn from these efforts.
+Thematic choices can be 'make or break' when it comes to audience.  I don't consider myself gifted when it comes to thematic choices in ggplot2, but I do like chalkboards and think we can do a reasonable job mimicking their look and that more gifted themers might learn from these efforts!  Using the chalkboard theme and its family should say to the audience, 'it's safe to ask questions about this plot; we're in the learning phase'
 
 I welcome feedback on the thematic or coding choices.
 
@@ -45,9 +47,15 @@ ggplot2::theme_gray() |> length()
 
 So let's get to writing our theme, `theme_chalkboard`.  
 
+```{r}
+theme_classic %>% args()
+```
+
+
 ```{r theme_chalkboard}
 theme_classic <- ggplot2::theme_classic
 
+#' @export
 theme_chalkboard <- function(paper = "darkseagreen4",
                              ink = alpha("lightyellow", .6),
                              accent = alpha("orange", 1),
@@ -55,36 +63,73 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              base_theme = theme_classic,
                       ...){
   
-  base_theme(paper = paper, ink = ink, base_size = base_size, ...) + 
-    theme(geom = element_geom(accent = accent))
+  base_theme(paper = paper, 
+             ink = ink, 
+             base_size = base_size, 
+             ...) +
+    theme(geom = element_geom(accent = accent), 
+          text = element_text(face = "plain"),
+          plot.title.position = "plot"
+          )
   
 }
 ```
+
+
+
+
 
 ```{r, out.width="49%", fig.show='hold'}
 library(tidyverse)
 ggplot(cars) + 
   aes(speed, dist) + 
   geom_point() + 
-  geom_smooth()
+  geom_smooth() + 
+  labs(y = "distance") +
+  labs(title = "Default ggplot2 theme")
 
 last_plot() + 
-  theme_chalkboard()
+  theme_chalkboard() + 
+  labs(title = "New theme demonstration")
 ```
 
+
+
+
+
+```{r}
+theme %>% args() %>% head()
+```
+
+
+https://evamaerey.github.io/ggplot2_grammar_guide/themes.html#56
+
+```{r}
+element_geom %>% args()
+```
+
+
+
+
+
 ```{r theme_blackboard}
-theme_blackboard <- function(paper = "grey27",
+#' @export
+theme_blackboard <- function(paper = "grey20",
                              ink = alpha("whitesmoke", .6),
                              accent = alpha("palevioletred3", .8),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = theme_chalkboard,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
 ```
+
+
+
+
 
 ```{r}
 last_plot() + 
@@ -94,14 +139,15 @@ last_plot() +
 
 
 ```{r theme_slateboard}
+#' @export
 theme_slateboard <- function(paper = "lightskyblue4",
                              ink = alpha("whitesmoke", .6),
                              accent = alpha("palevioletred3", .8),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = theme_chalkboard,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -116,14 +162,17 @@ last_plot() +
 
 
 ```{r theme_whiteboard}
+#' @export
 theme_whiteboard <- function(paper = "white",
-                             ink = alpha("darkslateblue", .9),
+                             ink = alpha("black", .9),
                              accent = alpha("darkred", .9),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = ggplot2::theme_classic,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, 
+             ink = ink, 
+             base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -136,14 +185,15 @@ last_plot() +
 ```
 
 ```{r theme_glassboard}
+#' @export
 theme_glassboard <- function(paper = alpha("white", 0),
-                             ink = alpha("midnightblue", .9),
+                             ink = alpha("black", .9),
                              accent = alpha("darkred", .9),
-                             base_size = 20,
-                             inherited = ggplot2::theme_classic,
+                             base_size = 18,
+                             base_theme = ggplot2::theme_classic,
                       ...){
   
-  inherited(paper = paper, ink = ink, base_size = base_size, ...) + 
+  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -155,9 +205,61 @@ last_plot() +
   theme_glassboard()
 ```
 
+# check for colorblindness...
 
 
+```{r, fig.width=20, fig.height=20, fig.cap="A test with colorblindr"}
+# remotes::install_github("clauswilke/colorblindr")
+colorblindr::cvd_grid(last_plot())
+```
 
+
+# What can be done about layer from a ggplot2 extension that has hard coded aesthetic defaults?
+
+```{r}
+library(ggplot2)
+library(ggalluvial)
+
+GeomStratum$default_aes # hardcoded
+
+titanic_flat <- data.frame(Titanic)
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+
+# Step 1.  Look at dynamic default aes from base ggplot2 for reference
+GeomRect$default_aes
+
+# Step 2. Update defaults as required.
+GeomStratum$default_aes <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15)),
+                               fill = from_theme(ggplot2:::col_mix(ink, paper, 0.35)),
+                               linewidth = from_theme(borderwidth),
+                               linetype = from_theme(bordertype),
+                               alpha = NA)
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+
+# An in-script, alternative could look like this
+GeomStratum$default_aes <- modifyList(GeomRect$default_aes, 
+                                      aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15))))
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+
+```
 
 
 Further coordination can be done when it comes to scales:
@@ -222,10 +324,10 @@ knitrExtra:::chunk_to_r("theme_glassboard")
 devtools::check(pkg = ".")
 ```
 
-### Bit F. Build package 🚧 ✅
+### Bit F. Install package 🚧 ✅
 
 ```{r, eval = F}
-devtools::build()
+devtools::install(pkg = ".", upgrade = "never") 
 ```
 
 
@@ -249,15 +351,6 @@ ggplot(data = cars) +
   aes(x = speed) + 
   geom_histogram() + 
   ggchalkboard:::theme_chalkboard()
-
-ggchalkboard:::geoms_chalk_on()
-
-last_plot()
-
-
-ggchalkboard:::geoms_chalk_off()
-
-last_plot()
 ```
 
 
