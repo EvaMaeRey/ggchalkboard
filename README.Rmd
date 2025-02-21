@@ -49,6 +49,8 @@ So let's get to writing our theme, `theme_chalkboard`.
 
 ```{r}
 theme_classic %>% args()
+
+tc <- theme_classic()
 ```
 
 
@@ -241,16 +243,9 @@ GeomStratum$default_aes <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 
                                linetype = from_theme(bordertype),
                                alpha = NA)
 
-ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
-  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
-  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
-  geom_alluvium() + # And we are ready to look at flow
-  geom_stratum() + # And we can label our stratum axes
-  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
-
-# An in-script, alternative could look like this
-GeomStratum$default_aes <- modifyList(GeomRect$default_aes, 
-                                      aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15))))
+# Alternative Step 2  An in-script, alternative could look like this
+aes_update <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15)))
+GeomStratum$default_aes <- GeomRect$default_aes |> modifyList(aes_update)
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
@@ -258,7 +253,6 @@ ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   geom_alluvium() + # And we are ready to look at flow
   geom_stratum() + # And we can label our stratum axes
   stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
-
 ```
 
 
@@ -271,10 +265,15 @@ scale_size_chalkboard <- function(...){
   
 }
 
+
+ggplot2::scale_size
+
 ggplot(data = cars) + 
   aes(x = speed, y = dist, size = dist) + 
   geom_point() + 
-  theme_chalkboard() + 
+  theme_chalkboard() 
+
+last_plot() + 
   scale_size_chalkboard()
 ```
 

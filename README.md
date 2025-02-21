@@ -48,6 +48,8 @@ theme_classic %>% args()
 #>     base_line_size = base_size/22, base_rect_size = base_size/22, 
 #>     ink = "black", paper = "white") 
 #> NULL
+
+tc <- theme_classic()
 ```
 
 ``` r
@@ -261,6 +263,10 @@ GeomStratum$default_aes <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 
                                linetype = from_theme(bordertype),
                                alpha = NA)
 
+# Alternative Step 2  An in-script, alternative could look like this
+aes_update <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15)))
+GeomStratum$default_aes <- GeomRect$default_aes |> modifyList(aes_update)
+
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
   ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
@@ -271,22 +277,6 @@ ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
 
 <img src="man/figures/README-unnamed-chunk-13-2.png" width="100%" />
 
-``` r
-
-# An in-script, alternative could look like this
-GeomStratum$default_aes <- modifyList(GeomRect$default_aes, 
-                                      aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15))))
-
-ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
-  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
-  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
-  geom_alluvium() + # And we are ready to look at flow
-  geom_stratum() + # And we can label our stratum axes
-  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
-```
-
-<img src="man/figures/README-unnamed-chunk-13-3.png" width="100%" />
-
 Further coordination can be done when it comes to scales:
 
 ``` r
@@ -296,14 +286,37 @@ scale_size_chalkboard <- function(...){
   
 }
 
+
+ggplot2::scale_size
+#> function (name = waiver(), breaks = waiver(), labels = waiver(), 
+#>     limits = NULL, range = NULL, transform = "identity", trans = deprecated(), 
+#>     guide = "legend", aesthetics = "size") 
+#> {
+#>     palette <- if (!is.null(range)) 
+#>         pal_area(range)
+#>     else NULL
+#>     continuous_scale(aesthetics, palette = palette, name = name, 
+#>         breaks = breaks, labels = labels, limits = limits, transform = transform, 
+#>         trans = trans, guide = guide)
+#> }
+#> <bytecode: 0x7f85f1fd8758>
+#> <environment: namespace:ggplot2>
+
 ggplot(data = cars) + 
   aes(x = speed, y = dist, size = dist) + 
   geom_point() + 
-  theme_chalkboard() + 
-  scale_size_chalkboard()
+  theme_chalkboard() 
 ```
 
 <img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+
+``` r
+
+last_plot() + 
+  scale_size_chalkboard()
+```
+
+<img src="man/figures/README-unnamed-chunk-14-2.png" width="100%" />
 
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
