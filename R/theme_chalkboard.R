@@ -1,31 +1,5 @@
 # scale_fill_viridis_c - see internals
 
-ma <- function(x,  b = "lightyellow", amount = .5, alpha = .8){
-  
-  x |> scales::col_mix(b, amount) |> alpha(alpha)
-  
-}
-
-safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alpha = .8) 
-{
-    function(n) {
-        rlang::check_installed("khroma")
-        if (n <= 6 && !reverse) 
-            return((khroma::color("bright"))(n) |> ma(b = b, amount = amount, alpha = alpha))
-        if (n <= 6 && reverse) {
-            col <- (khroma::color("bright", reverse = TRUE))(n + 
-                1)
-            return(col[2:(n + 1)]  |> ma(b = b, amount = amount, alpha = alpha))
-        }
-        if (n %in% 7:9) 
-            return((khroma::color("muted", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
-        set.seed(42)
-        if (n <= 23) 
-            return(sample((khroma::color("discrete rainbow", 
-                reverse = reverse))(n)) |> ma(b = b, amount = amount, alpha = alpha))
-        sample((khroma::color("smooth rainbow", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
-    }
-}
 
 
 viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
@@ -89,6 +63,7 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              palette.fill.discrete = chalkboard_viridis_d(),
                              palette.colour.binned = chalkboard_viridis_b(),
                              palette.fill.binned = chalkboard_viridis_b(),
+                             # palette.size.continuous = 
                       ...){
   
   base_theme(paper = paper, 

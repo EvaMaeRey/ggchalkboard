@@ -57,32 +57,6 @@ tc <- theme_classic()
 ``` r
 # scale_fill_viridis_c - see internals
 
-ma <- function(x,  b = "lightyellow", amount = .5, alpha = .8){
-  
-  x |> scales::col_mix(b, amount) |> alpha(alpha)
-  
-}
-
-safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alpha = .8) 
-{
-    function(n) {
-        rlang::check_installed("khroma")
-        if (n <= 6 && !reverse) 
-            return((khroma::color("bright"))(n) |> ma(b = b, amount = amount, alpha = alpha))
-        if (n <= 6 && reverse) {
-            col <- (khroma::color("bright", reverse = TRUE))(n + 
-                1)
-            return(col[2:(n + 1)]  |> ma(b = b, amount = amount, alpha = alpha))
-        }
-        if (n %in% 7:9) 
-            return((khroma::color("muted", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
-        set.seed(42)
-        if (n <= 23) 
-            return(sample((khroma::color("discrete rainbow", 
-                reverse = reverse))(n)) |> ma(b = b, amount = amount, alpha = alpha))
-        sample((khroma::color("smooth rainbow", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
-    }
-}
 
 
 viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
@@ -146,6 +120,7 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              palette.fill.discrete = chalkboard_viridis_d(),
                              palette.colour.binned = chalkboard_viridis_b(),
                              palette.fill.binned = chalkboard_viridis_b(),
+                             # palette.size.continuous = 
                       ...){
   
   base_theme(paper = paper, 
@@ -344,86 +319,6 @@ composite
 colorblindr::cvd_grid(last_plot())
 ```
 
-# What can be done about layer from a ggplot2 extension that has hard coded aesthetic defaults?
-
-``` r
-library(ggplot2)
-library(ggalluvial)
-
-GeomStratum$default_aes # hardcoded
-
-titanic_flat <- data.frame(Titanic)
-
-ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
-  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
-  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
-  geom_alluvium() + # And we are ready to look at flow
-  geom_stratum() + # And we can label our stratum axes
-  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
-
-# Step 1.  Look at dynamic default aes from base ggplot2 for reference
-GeomRect$default_aes
-
-# Step 2. Update defaults as required.
-GeomStratum$default_aes <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15)),
-                               fill = from_theme(ggplot2:::col_mix(ink, paper, 0.35)),
-                               linewidth = from_theme(borderwidth),
-                               linetype = from_theme(bordertype),
-                               alpha = NA)
-
-# Alternative Step 2  An in-script, alternative could look like this
-aes_update <- aes(color = from_theme(ggplot2:::col_mix(ink, paper, 0.15)))
-GeomStratum$default_aes <- GeomRect$default_aes |> modifyList(aes_update)
-
-ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
-  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
-  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
-  geom_alluvium() + # And we are ready to look at flow
-  geom_stratum() + # And we can label our stratum axes
-  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
-```
-
-Further coordination can be done when it comes to scales:
-
-``` r
-scale_size_chalkboard <- function(...){
-  
-  scale_size(range = c(2, 9), ...)
-  
-}
-
-
-ggplot2::scale_size
-#> function (name = waiver(), breaks = waiver(), labels = waiver(), 
-#>     limits = NULL, range = NULL, transform = "identity", trans = deprecated(), 
-#>     guide = "legend", aesthetics = "size") 
-#> {
-#>     palette <- if (!is.null(range)) 
-#>         pal_area(range)
-#>     else NULL
-#>     continuous_scale(aesthetics, palette = palette, name = name, 
-#>         breaks = breaks, labels = labels, limits = limits, transform = transform, 
-#>         trans = trans, guide = guide, fallback.palette = pal_area())
-#> }
-#> <bytecode: 0x1454d4780>
-#> <environment: namespace:ggplot2>
-
-ggplot(data = cars) + 
-  aes(x = speed, y = dist, size = dist) + 
-  geom_point() + 
-  theme_chalkboard() 
-```
-
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
-
-``` r
-
-last_plot() + 
-  scale_size_chalkboard()
-```
-
-<img src="man/figures/README-unnamed-chunk-14-2.png" width="100%" />
-
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
 
@@ -455,3 +350,121 @@ knitrExtra:::chunk_to_r("theme_glassboard")
 devtools::check(pkg = ".")
 devtools::install(pkg = ".", upgrade = "never") 
 ```
+
+# consider Joseph Lamarange’s work! safe_pal
+
+``` r
+
+ma <- function(x,  b = "lightyellow", amount = .5, alpha = .8){
+  
+  x |> scales::col_mix(b, amount) |> alpha(alpha)
+  
+}
+
+safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alpha = .8) 
+{
+    function(n) {
+        rlang::check_installed("khroma")
+        if (n <= 6 && !reverse) 
+            return((khroma::color("bright"))(n) |> ma(b = b, amount = amount, alpha = alpha))
+        if (n <= 6 && reverse) {
+            col <- (khroma::color("bright", reverse = TRUE))(n + 
+                1)
+            return(col[2:(n + 1)]  |> ma(b = b, amount = amount, alpha = alpha))
+        }
+        if (n %in% 7:9) 
+            return((khroma::color("muted", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
+        set.seed(42)
+        if (n <= 23) 
+            return(sample((khroma::color("discrete rainbow", 
+                reverse = reverse))(n)) |> ma(b = b, amount = amount, alpha = alpha))
+        sample((khroma::color("smooth rainbow", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
+    }
+}
+```
+
+# What can be done about layer from a ggplot2 extension that has hard coded aesthetic defaults?
+
+``` r
+library(ggplot2)
+library(ggalluvial)
+
+GeomStratum$default_aes # hardcoded
+#> $size
+#> [1] 0.5
+#> 
+#> $linewidth
+#> [1] 0.5
+#> 
+#> $linetype
+#> [1] 1
+#> 
+#> $colour
+#> [1] "black"
+#> 
+#> $fill
+#> [1] "white"
+#> 
+#> $alpha
+#> [1] 1
+#> 
+#> attr(,"class")
+#> [1] "uneval"
+
+titanic_flat <- data.frame(Titanic)
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard:::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+```
+
+<img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" />
+
+``` r
+
+# Step 1.  Look at dynamic default aes from base ggplot2 for reference
+GeomRect$default_aes
+#> Aesthetic mapping: 
+#> * `colour`    -> `from_theme(colour %||% NA)`
+#> * `fill`      -> `from_theme(fill %||% col_mix(ink, paper, 0.35))`
+#> * `linewidth` -> `from_theme(borderwidth)`
+#> * `linetype`  -> `from_theme(bordertype)`
+#> * `alpha`     -> NA
+
+# Step 2. Update defaults as required.
+GeomStratum$default_aes <- aes(color = from_theme(ink),
+                               fill = from_theme(paper),
+                               linewidth = from_theme(borderwidth),
+                               linetype = from_theme(bordertype),
+                               alpha = NA)
+
+# Alternative Step 2  An in-script, alternative could look like this
+aes_update <- aes(color = from_theme(ink))
+GeomStratum$default_aes <- GeomRect$default_aes |> modifyList(aes_update)
+
+
+geom_stratum
+#> function (mapping = NULL, data = NULL, stat = "stratum", position = "identity", 
+#>     show.legend = NA, inherit.aes = TRUE, width = 1/3, na.rm = FALSE, 
+#>     ...) 
+#> {
+#>     layer(geom = GeomStratum, mapping = mapping, data = data, 
+#>         stat = stat, position = position, show.legend = show.legend, 
+#>         inherit.aes = inherit.aes, params = list(width = width, 
+#>             na.rm = na.rm, ...))
+#> }
+#> <bytecode: 0x126e4f570>
+#> <environment: namespace:ggalluvial>
+
+ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
+  aes(y = Freq, axis1 = Sex, axis2 = Survived) + # Here some variables of interest
+  ggchalkboard::theme_chalkboard(base_size = 18) + # in a alluvial plot first look
+  geom_alluvium() + # And we are ready to look at flow
+  geom_stratum() + # And we can label our stratum axes
+  stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
+```
+
+<img src="man/figures/README-unnamed-chunk-17-2.png" width="100%" />
