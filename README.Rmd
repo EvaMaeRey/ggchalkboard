@@ -27,7 +27,7 @@ library(tidyverse)
 
 # {ggchalkboard} 
 
-ggchalkboard is a teaching package. It shows examples of how to extend ggplot2 themes with version 3.5.1.9000, which has some significant updates - layers (geom_ and stat_) colors can be updated within the theme!
+ggchalkboard is a teaching package. It shows examples of how to extend ggplot2 themes with version 4.0.0.   which has some significant updates - layers (geom_ and stat_) colors can be updated within the theme!
 
 Thematic choices can be 'make or break' when it comes to audience.  I don't consider myself gifted when it comes to thematic choices in ggplot2, but I do like chalkboards and think we can do a reasonable job mimicking their look and that more gifted themers might learn from these efforts!  Using the chalkboard theme and its family should say to the audience, 'it's safe to ask questions about this plot; we're in the learning phase'
 
@@ -55,7 +55,84 @@ tc <- theme_classic()
 
 
 ```{r theme_chalkboard}
-theme_classic <- ggplot2::theme_classic
+# scale_fill_viridis_c - see internals
+
+ma <- function(x,  b = "lightyellow", amount = .5, alpha = .8){
+  
+  x |> scales::col_mix(b, amount) |> alpha(alpha)
+  
+}
+
+safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alpha = .8) 
+{
+    function(n) {
+        rlang::check_installed("khroma")
+        if (n <= 6 && !reverse) 
+            return((khroma::color("bright"))(n) |> ma(b = b, amount = amount, alpha = alpha))
+        if (n <= 6 && reverse) {
+            col <- (khroma::color("bright", reverse = TRUE))(n + 
+                1)
+            return(col[2:(n + 1)]  |> ma(b = b, amount = amount, alpha = alpha))
+        }
+        if (n %in% 7:9) 
+            return((khroma::color("muted", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
+        set.seed(42)
+        if (n <= 23) 
+            return(sample((khroma::color("discrete rainbow", 
+                reverse = reverse))(n)) |> ma(b = b, amount = amount, alpha = alpha))
+        sample((khroma::color("smooth rainbow", reverse = reverse))(n) |> ma(b = b, amount = amount, alpha = alpha))
+    }
+}
+
+
+viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
+    
+  set.seed(12345)
+  
+  scales::pal_viridis(alpha, begin, end, direction, option) |> 
+      scales::col_mix(colmix, amount)
+  
+}
+
+
+viridis_pal_b <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
+  
+  pal_binned(pal_viridis(alpha, begin, end, direction, 
+        option))  |> 
+      scales::col_mix(colmix, amount)
+
+}
+  
+viridis_pal_c <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
+  
+  scales::pal_gradient_n(
+    scales::pal_viridis(alpha = alpha, 
+                        begin = begin, 
+                        end = end, 
+                        direction = direction, 
+                        option = option)(6) |>
+      scales::col_mix(colmix, amount), 
+    values = NULL, 
+    space = "Lab")
+  
+}
+
+
+chalkboard_viridis_c <- function(){
+  
+  viridis_pal_c(alpha = .4, begin = 0, end = .95, direction = 1, option = "viridis", colmix = "lightyellow", amount = .6)
+  
+}
+
+chalkboard_viridis_d <- function(){
+  
+  viridis_pal_d(alpha = .4, begin = 0, end = .95, direction = 1, option = "viridis", colmix = "lightyellow", amount = .6)
+  
+}
+
+
+
+
 
 #' @export
 theme_chalkboard <- function(paper = "darkseagreen4",
@@ -63,26 +140,35 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              accent = alpha("orange", 1),
                              base_size = 20,
                              base_theme = theme_classic,
+                             palette.colour.continuous = chalkboard_viridis_c(),
+                             palette.fill.continuous = chalkboard_viridis_c(),
+                             palette.colour.discrete = chalkboard_viridis_d(),
+                             palette.fill.discrete = chalkboard_viridis_d(),
+                             palette.colour.binned = chalkboard_viridis_b(),
+                             palette.fill.binned = chalkboard_viridis_b(),
                       ...){
   
   base_theme(paper = paper, 
              ink = ink, 
-             base_size = base_size, 
-             ...) +
-    theme(geom = element_geom(accent = accent), 
+             base_size = base_size, ...) +
+    theme(geom = element_geom(accent = accent#, pointshape = 21
+                              ), 
           text = element_text(face = "plain"),
-          plot.title.position = "plot"
-          )
+          plot.title.position = "plot", 
+          palette.colour.continuous = palette.colour.continuous, 
+          palette.fill.continuous = palette.fill.continuous,
+          palette.colour.discrete = palette.colour.discrete,
+          palette.fill.discrete = palette.fill.discrete,
+          palette.fill.ordinal = palette.colour.discrete,
+          palette.fill.ordinal = palette.colour.discrete)
   
 }
+
 ```
-
-
-
-
 
 ```{r, out.width="49%", fig.show='hold'}
 library(tidyverse)
+
 ggplot(cars) + 
   aes(speed, dist) + 
   geom_point() + 
@@ -96,18 +182,65 @@ last_plot() +
 ```
 
 
-
-
-
 ```{r}
-theme %>% args() %>% head()
+theme_chalkboard(base_size = 12) |> theme_set()
+
+p1 <- ggplot(cars) +
+  aes(speed, dist) +
+  geom_point() +
+  geom_smooth() + 
+  labs(title = "accent")
+
+p2 <- ggplot(cars) +
+  aes(speed, dist) +
+  geom_point() +
+  aes(color = speed) + 
+  labs(title = "continuous")
+
+p3 <- ggplot(penguins) + 
+  aes(x = species, 
+      fill = species) + 
+  geom_bar() + 
+  labs(title = "discrete")
+
+p4 <- ggplot(diamonds) + 
+  aes(x = cut, 
+      fill = cut) + 
+  geom_bar() + 
+  labs(title = "ordinal")
+
+library(patchwork)
+composite <- (p1 + p2) / (p3 + p4) & theme(legend.position = "none") 
+
+composite
+
 ```
 
-
-https://evamaerey.github.io/ggplot2_grammar_guide/themes.html#56
-
 ```{r}
-element_geom %>% args()
+theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2", accent = "orange", 
+                             base_size = 20,
+                             base_theme = theme_classic,
+                             palette.colour.continuous = viridis_pal_c(option = "viridis", begin = .4),
+                             palette.fill.continuous = viridis_pal_c(option = "viridis", begin = .4),
+                             palette.colour.discrete = viridis_pal_d(colmix = "cadetblue1", amount = .2, alpha = 1),
+                             palette.fill.discrete = viridis_pal_d(colmix = "cadetblue1", amount = .5, alpha = 1),
+                          
+                        ...){
+  
+  theme_chalkboard(paper = paper, ink = ink, accent = accent, base_theme = base_theme,
+          base_size = base_size,
+          palette.colour.continuous = palette.colour.continuous, 
+          palette.fill.continuous = palette.fill.continuous,
+          palette.colour.discrete = palette.colour.discrete,
+          palette.fill.discrete = palette.fill.discrete
+          )
+  
+}
+
+theme_rosling(base_size = 12) |> theme_set()
+
+composite
+
 ```
 
 
@@ -123,7 +256,7 @@ theme_blackboard <- function(paper = "grey20",
                              base_theme = theme_chalkboard,
                       ...){
   
-  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
+  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, ...) +
     theme(geom = element_geom(accent = accent))
   
 }
@@ -132,10 +265,10 @@ theme_blackboard <- function(paper = "grey20",
 
 
 
-
 ```{r}
-last_plot() + 
-  theme_blackboard()
+theme_blackboard(base_size = 12) |> theme_set()
+
+composite
 ```
 
 
@@ -149,16 +282,16 @@ theme_slateboard <- function(paper = "lightskyblue4",
                              base_theme = theme_chalkboard,
                       ...){
   
-  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
+  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, accent = accent, ...)
   
 }
 ```
 
 
 ```{r}
-last_plot() +
-  theme_slateboard()
+theme_slateboard(base_size = 12) |> theme_set()
+
+composite
 ```
 
 
@@ -172,18 +305,18 @@ theme_whiteboard <- function(paper = "white",
                              base_theme = ggplot2::theme_classic,
                       ...){
   
-  base_theme(paper = paper, 
+  theme_chalkboard(paper = paper, 
              ink = ink, 
-             base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
+             base_size = base_size, accent = accent, ...)
   
 }
 ```
 
 
 ```{r}
-last_plot() +
-  theme_whiteboard()
+theme_whiteboard(base_size = 12) |> theme_set()
+
+composite
 ```
 
 ```{r theme_glassboard}
@@ -203,22 +336,26 @@ theme_glassboard <- function(paper = alpha("white", 0),
 
 
 ```{r}
-last_plot() +
-  theme_glassboard()
+theme_glassboard(base_size = 12) |> theme_set()
+
+composite
 ```
 
 # check for colorblindness...
 
 
-```{r, fig.width=20, fig.height=20, fig.cap="A test with colorblindr"}
+```{r, fig.width=20, fig.height=20, eval = F, fig.cap="A test with colorblindr"}
 # remotes::install_github("clauswilke/colorblindr")
 colorblindr::cvd_grid(last_plot())
 ```
 
 
+
+
+
 # What can be done about layer from a ggplot2 extension that has hard coded aesthetic defaults?
 
-```{r}
+```{r, eval = F}
 library(ggplot2)
 library(ggalluvial)
 
@@ -279,33 +416,18 @@ last_plot() +
 
 Color and fill scale are probably of greater interest, I know. Something to come back to. 
 
-# Part II. Packaging and documentation  🚧
 
-## Phase 1. Minimal working package
+## Minimal working package
 
-### Bit A. Created package archetecture, running `devtools::create(".")` in interactive session. ✅
 
 
 ```{r, eval = F}
 devtools::create(".")
 ```
 
-### Bit B. Added roxygen skeleton? 🚧 
 
-Use a roxygen skeleton for auto documentation and making sure proposed functions are *exported*.  Generally, early on, I don't do much (anything) in terms of filling in the skeleton for documentation, because things may change.
+### Moved functions R folder
 
-### Bit C. Managed dependencies ? ✅
-
-Package dependencies managed, i.e. `depend::function()` in proposed functions and declared in the DESCRIPTION
-
-```{r, eval = F}
-usethis::use_package("ggplot2")
-```
-
-
-### Bit D. Moved functions R folder? ✅
-
-Use new {readme2pkg} function to do this from readme...
 
 ```{r}
 knitrExtra::chunk_names_get()
@@ -317,128 +439,11 @@ knitrExtra:::chunk_to_r("theme_slateboard")
 knitrExtra:::chunk_to_r("theme_glassboard")
 ```
 
-### Bit E. Run `devtools::check()` and addressed errors. 🚧 ✅
+
 
 ```{r, eval = F}
 devtools::check(pkg = ".")
-```
-
-### Bit F. Install package 🚧 ✅
-
-```{r, eval = F}
 devtools::install(pkg = ".", upgrade = "never") 
 ```
 
 
-### Bit G. Write traditional README that uses built package (also serves as a test of build. ✅ 
-
-The goal of the {ggchalkboard} package is to make it easy to theme ggplots like chalkboards
-
-Install package with:
-
-```
-remotes::install_github("EvaMaeRey/ggchalkboard")
-```
-
-Once functions are exported you can remove go to two colons, and when things are are really finalized, then go without colons (and rearrange your readme...)
-
-```{r, eval = F}
-library(ggchalkboard)  
-library(ggplot2)
-
-ggplot(data = cars) + 
-  aes(x = speed) + 
-  geom_histogram() + 
-  ggchalkboard:::theme_chalkboard()
-```
-
-
-
-
-### Bit H. Chosen a license? ✅
-
-
-```{r, eval = F}
-usethis::use_mit_license()
-```
-
-### Bit I. Add lifecycle badge (experimental) ✅
-
-```{r, eval = F}
-usethis::use_lifecycle_badge("experimental")
-```
-
-
-## Phase 2: Listen & iterate 🚧 
-
-Try to get feedback from experts on API, implementation, default decisions.  Is there already work that solves this problem? 
-
-
-## Phase 3: Let things settle
-
-### Bit A. Settle on examples.  Put them in the roxygen skeleton and readme. 🚧 
-
-### Bit B. Written formal tests of functions and save to test that folders 🚧 
-
-
-That would look like this...
-
-```{r test_calc_times_two_works, eval = F}
-library(testthat)
-
-test_that("calc times 2 works", {
-  expect_equal(times_two(4), 8)
-  expect_equal(times_two(5), 10)
-  
-})
-```
-
-
-```{r, eval = F}
-knitrExtra:::chunk_to_tests_testthat("test_calc_times_two_works")
-```
-
-
-### Bit C. Added a description and author information in the DESCRIPTION file 🚧 
-
-### Bit D. Addressed *all* notes, warnings and errors. 🚧 
-
-## Phase 4. Promote to wider audience...
-
-### Bit A. Package website built?  ✅
-
-```{r, eval = F}
-usethis::use_pkgdown()
-pkgdown::build_site()
-
-```
-
-
-### Bit B. Package website deployed? 🚧 ✅
-
-## Phase 5: Harden/commit
-
-### Submit to CRAN/RUniverse? 🚧 
-
-# Appendix: Reports, Environment
-
-## Edit Description file
-
-```{r, eval = T}
-readLines("DESCRIPTION")
-```
-
-## Environment
-
-Here I just want to print the packages and the versions
-
-```{r}
-all <- sessionInfo() |> print() |> capture.output()
-all[11:20]
-```
-
-## `devtools::check()` report
-
-```{r, error = T, results="hide", warning=F, eval = F}
-devtools::check(pkg = ".")
-```

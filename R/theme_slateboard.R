@@ -6,7 +6,6 @@ theme_slateboard <- function(paper = "lightskyblue4",
                              base_theme = theme_chalkboard,
                       ...){
   
-  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
+  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, accent = accent, ...)
   
 }

@@ -6,9 +6,8 @@ theme_whiteboard <- function(paper = "white",
                              base_theme = ggplot2::theme_classic,
                       ...){
   
-  base_theme(paper = paper, 
+  theme_chalkboard(paper = paper, 
              ink = ink, 
-             base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
+             base_size = base_size, accent = accent, ...)
   
 }
