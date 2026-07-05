@@ -236,21 +236,12 @@ theme_chalkboard <- function(paper = "darkseagreen4",
 ```
 
 ``` r
-library(tidyverse)
+theme_set(theme_chalkboard(base_size = 10))
 
-ggplot(cars) + 
-  aes(speed, dist) + 
-  geom_point() + 
-  geom_smooth() + 
-  labs(y = "distance") +
-  labs(title = "Default ggplot2 theme")
-
-last_plot() + 
-  theme_chalkboard() + 
-  labs(title = "New theme demonstration")
+patchwork_ensemble
 ```
 
-![](reference/figures/README-unnamed-chunk-7-1.png)![](reference/figures/README-unnamed-chunk-7-2.png)
+![](reference/figures/README-unnamed-chunk-7-1.png)
 
 # Derivative themes: blackboard, slateboard, glassboard …
 
@@ -515,7 +506,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x12f6705c0>
+#> <bytecode: 0x125cc9040>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data

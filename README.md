@@ -184,9 +184,9 @@ patchwork_ensemble
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
-<details>
-
 ## Color palette adjustments for `theme_chalkboard()`
+
+<details>
 
 ``` r
 # color mixed continuous viridis pal
@@ -260,21 +260,12 @@ theme_chalkboard <- function(paper = "darkseagreen4",
 </details>
 
 ``` r
-library(tidyverse)
+theme_set(theme_chalkboard(base_size = 10))
 
-ggplot(cars) + 
-  aes(speed, dist) + 
-  geom_point() + 
-  geom_smooth() + 
-  labs(y = "distance") +
-  labs(title = "Default ggplot2 theme")
-
-last_plot() + 
-  theme_chalkboard() + 
-  labs(title = "New theme demonstration")
+patchwork_ensemble
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="49%" /><img src="man/figures/README-unnamed-chunk-7-2.png" width="49%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 # Derivative themes: blackboard, slateboard, glassboard …
 
@@ -562,7 +553,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x12f6705c0>
+#> <bytecode: 0x125cc9040>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data

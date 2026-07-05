@@ -165,10 +165,13 @@ patchwork_ensemble
 
 
 
-<details>
 
 
 ## Color palette adjustments for `theme_chalkboard()`
+
+
+<details>
+
 
 ```{r theme_chalkboard}
 # color mixed continuous viridis pal
@@ -243,19 +246,10 @@ theme_chalkboard <- function(paper = "darkseagreen4",
 
 </details>
 
-```{r, out.width="49%", fig.show='hold'}
-library(tidyverse)
+```{r}
+theme_set(theme_chalkboard(base_size = 10))
 
-ggplot(cars) + 
-  aes(speed, dist) + 
-  geom_point() + 
-  geom_smooth() + 
-  labs(y = "distance") +
-  labs(title = "Default ggplot2 theme")
-
-last_plot() + 
-  theme_chalkboard() + 
-  labs(title = "New theme demonstration")
+patchwork_ensemble
 ```
 
 
