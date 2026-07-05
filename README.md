@@ -2,10 +2,11 @@
 - [Intro: {ggchalkboard}](#intro-ggchalkboard)
   - [Where we are headed:](#where-we-are-headed)
   - [Getting started:
-    theme_whiteboard](#getting-started-theme_whiteboard)
-- [Derivative themes: blackboard, slateboard, whiteboard, glassboard,
-  and
-  more…](#derivative-themes-blackboard-slateboard-whiteboard-glassboard-and-more)
+    `theme_whiteboard()`](#getting-started-theme_whiteboard)
+  - [Color palette adjustments for
+    `theme_chalkboard()`](#color-palette-adjustments-for-theme_chalkboard)
+- [Derivative themes: blackboard, slateboard, glassboard
+  …](#derivative-themes-blackboard-slateboard-glassboard-)
 - [Minimal working package](#minimal-working-package)
   - [Moved functions R folder](#moved-functions-r-folder)
   - [check and install](#check-and-install)
@@ -84,7 +85,7 @@ ggplot2::theme_gray() |> length()
 #> [1] 144
 ```
 
-## Getting started: theme_whiteboard
+## Getting started: `theme_whiteboard()`
 
 So let’s get to writing. We’ll start with theme_whiteboard.
 
@@ -177,13 +178,15 @@ patchwork_ensemble <-
 </details>
 
 ``` r
-theme_set(theme_whiteboard(base_size = 12))
+theme_set(theme_whiteboard(base_size = 10))
 patchwork_ensemble
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 <details>
+
+## Color palette adjustments for `theme_chalkboard()`
 
 ``` r
 # color mixed continuous viridis pal
@@ -273,7 +276,7 @@ last_plot() +
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="49%" /><img src="man/figures/README-unnamed-chunk-7-2.png" width="49%" />
 
-# Derivative themes: blackboard, slateboard, whiteboard, glassboard, and more…
+# Derivative themes: blackboard, slateboard, glassboard …
 
 ``` r
 #' @export
@@ -293,7 +296,7 @@ theme_blackboard <- function(paper = "grey20",
 </details>
 
 ``` r
-theme_set(theme_blackboard(base_size = 12))
+theme_set(theme_blackboard(base_size = 10))
 
 patchwork_ensemble
 ```
@@ -320,14 +323,12 @@ theme_slateboard <- function(paper = "lightskyblue4",
 </details>
 
 ``` r
-theme_set(theme_slateboard(base_size = 12))
+theme_set(theme_slateboard(base_size = 10))
 
 patchwork_ensemble
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
-
-<details>
 
 <details>
 
@@ -349,7 +350,7 @@ theme_glassboard <- function(paper = alpha("white", 0), # transparent
 </details>
 
 ``` r
-theme_set(theme_glassboard(base_size = 12))
+theme_set(theme_glassboard(base_size = 10))
 
 patchwork_ensemble
 ```
@@ -390,7 +391,7 @@ theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2",
 </details>
 
 ``` r
-theme_set(theme_rosling(base_size = 12))
+theme_set(theme_rosling(base_size = 10))
 
 patchwork_ensemble
 ```
@@ -561,7 +562,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x12f1384e8>
+#> <bytecode: 0x129329b28>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data

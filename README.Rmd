@@ -67,7 +67,7 @@ We'll be modifying a theme, since we don't want to start from scratch -- a theme
 ggplot2::theme_gray() |> length()
 ```
 
-## Getting started:  theme_whiteboard
+## Getting started:  `theme_whiteboard()`
 
 So let's get to writing.  We'll start with theme_whiteboard.  
 
@@ -159,13 +159,16 @@ patchwork_ensemble <-
 </details>
 
 ```{r}
-theme_set(theme_whiteboard(base_size = 12))
+theme_set(theme_whiteboard(base_size = 10))
 patchwork_ensemble
 ```
 
 
 
 <details>
+
+
+## Color palette adjustments for `theme_chalkboard()`
 
 ```{r theme_chalkboard}
 # color mixed continuous viridis pal
@@ -258,7 +261,7 @@ last_plot() +
 
 
 
-# Derivative themes:  blackboard, slateboard, whiteboard, glassboard, and more...
+# Derivative themes:  blackboard, slateboard, glassboard ...
 
 
 ```{r theme_blackboard}
@@ -280,7 +283,7 @@ theme_blackboard <- function(paper = "grey20",
 </details>
 
 ```{r}
-theme_set(theme_blackboard(base_size = 12))
+theme_set(theme_blackboard(base_size = 10))
 
 patchwork_ensemble
 ```
@@ -305,14 +308,13 @@ theme_slateboard <- function(paper = "lightskyblue4",
 </details>
 
 ```{r}
-theme_set(theme_slateboard(base_size = 12))
+theme_set(theme_slateboard(base_size = 10))
 
 patchwork_ensemble
 
   
 ```
 
-<details>
 
 
 
@@ -338,7 +340,7 @@ theme_glassboard <- function(paper = alpha("white", 0), # transparent
 </details>
 
 ```{r}
-theme_set(theme_glassboard(base_size = 12))
+theme_set(theme_glassboard(base_size = 10))
 
 patchwork_ensemble
 ```
@@ -381,7 +383,7 @@ theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2",
 
 
 ```{r}
-theme_set(theme_rosling(base_size = 12))
+theme_set(theme_rosling(base_size = 10))
 
 patchwork_ensemble
 ```

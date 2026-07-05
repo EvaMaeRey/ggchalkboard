@@ -1,11 +1,15 @@
 # Intro: {ggchalkboard}
 
 - [Intro: {ggchalkboard}](#intro-ggchalkboard)
+  - [Where we are headed:](#where-we-are-headed)
+  - [Getting started:
+    theme_whiteboard](#getting-started-theme_whiteboard)
 - [Derivative themes: blackboard, slateboard, whiteboard, glassboard,
   and
   more…](#derivative-themes-blackboard-slateboard-whiteboard-glassboard-and-more)
-  - [Minimal working package](#minimal-working-package)
-    - [Moved functions R folder](#moved-functions-r-folder)
+- [Minimal working package](#minimal-working-package)
+  - [Moved functions R folder](#moved-functions-r-folder)
+  - [check and install](#check-and-install)
 - [More considerations](#more-considerations)
   - [colorblindness colorblindr](#colorblindness-colorblindr)
   - [looking to the future… consider Joseph Lamarange’s work!?
@@ -38,9 +42,25 @@ learning phase’
 
 I welcome feedback on the thematic or coding choices.
 
+## Where we are headed:
+
 ``` r
 library(ggplot2)
+library(ggchalkboard)
+
+ggplot(cars) + 
+  aes(speed, dist) + 
+  geom_point() + 
+  geom_smooth() + 
+  labs(y = "distance") +
+  labs(title = "Default ggplot2 theme")
+
+last_plot() + 
+  theme_chalkboard() + 
+  labs(title = "New chalkboard theme")
 ```
+
+![](reference/figures/README-unnamed-chunk-2-1.png)![](reference/figures/README-unnamed-chunk-2-2.png)
 
 We’ll be modifying a theme, since we don’t want to start from scratch –
 a theme contains a lot of decisions; to get a sense of that we can look
@@ -52,7 +72,96 @@ ggplot2::theme_gray() |> length()
 #> [1] 144
 ```
 
-So let’s get to writing our theme, `theme_chalkboard`.
+## Getting started: theme_whiteboard
+
+So let’s get to writing. We’ll start with theme_whiteboard.
+
+``` r
+#' @export
+theme_whiteboard <- function(base_size = 18,
+    base_theme = ggplot2::theme_classic,
+    paper = "grey98",
+    ink = "grey20",
+    accent = alpha("darkred", .7),
+    palette.colour.continuous = "plasma",
+    palette.fill.continuous = "plasma",
+    palette.colour.discrete = "plasma",
+    palette.fill.discrete = "plasma",
+                      ...){
+  
+ base_theme(base_size = base_size, 
+            paper = paper, 
+             ink = ink, 
+             accent = accent,
+             ...) %+replace%
+    theme(plot.title.position = "plot", 
+          palette.colour.continuous = palette.colour.continuous, 
+          palette.fill.continuous = palette.fill.continuous,
+          palette.colour.discrete = palette.colour.discrete,
+          palette.fill.discrete = palette.fill.discrete
+          # palette.fill.ordinal = palette.colour.discrete,  # wish list
+          # palette.fill.ordinal = palette.fill.discrete 
+          )
+  
+}
+```
+
+``` r
+ggplot(cars) + 
+  aes(speed, dist) + 
+  geom_point() + 
+  geom_smooth() + 
+  labs(y = "distance") +
+  theme_whiteboard()
+```
+
+![](reference/figures/README-unnamed-chunk-4-1.png)
+
+``` r
+
+last_plot() + 
+  theme_whiteboard(base_theme = theme_gray)
+```
+
+![](reference/figures/README-unnamed-chunk-4-2.png)
+
+``` r
+p1 <- ggplot(cars) +
+  aes(speed, dist) +
+  geom_point() +
+  geom_smooth() + 
+  labs(title = "accent")
+
+p2 <- ggplot(cars) +
+  aes(speed, dist) +
+  geom_point() +
+  aes(color = speed) + 
+  labs(title = "continuous")
+
+p3 <- ggplot(penguins) + 
+  aes(x = species, 
+      fill = species) + 
+  geom_bar() + 
+  labs(title = "discrete")
+
+p4 <- ggplot(diamonds) + 
+  aes(x = cut, 
+      fill = cut) + 
+  geom_bar() + 
+  labs(title = "ordinal")
+
+library(patchwork)
+patchwork_ensemble <- 
+  (p1 + p2) / (p3 + p4) & 
+  theme(legend.position = "none") 
+```
+
+``` r
+theme_set(theme_whiteboard(base_size = 12))
+patchwork_ensemble
+```
+
+![](reference/figures/README-unnamed-chunk-6-1.png)
 
 ``` r
 # color mixed continuous viridis pal
@@ -118,8 +227,6 @@ theme_chalkboard <- function(paper = "darkseagreen4",
           palette.fill.continuous = palette.fill.continuous,
           palette.colour.discrete = palette.colour.discrete,
           palette.fill.discrete = palette.fill.discrete
-          # palette.fill.ordinal = palette.colour.discrete,  # wish list
-          # palette.fill.ordinal = palette.fill.discrete 
           )
   
 }
@@ -140,43 +247,7 @@ last_plot() +
   labs(title = "New theme demonstration")
 ```
 
-![](reference/figures/README-unnamed-chunk-4-1.png)![](reference/figures/README-unnamed-chunk-4-2.png)
-
-``` r
-theme_chalkboard(base_size = 12) |> theme_set()
-
-p1 <- ggplot(cars) +
-  aes(speed, dist) +
-  geom_point() +
-  geom_smooth() + 
-  labs(title = "accent")
-
-p2 <- ggplot(cars) +
-  aes(speed, dist) +
-  geom_point() +
-  aes(color = speed) + 
-  labs(title = "continuous")
-
-p3 <- ggplot(penguins) + 
-  aes(x = species, 
-      fill = species) + 
-  geom_bar() + 
-  labs(title = "discrete")
-
-p4 <- ggplot(diamonds) + 
-  aes(x = cut, 
-      fill = cut) + 
-  geom_bar() + 
-  labs(title = "ordinal")
-
-library(patchwork)
-patchwork_for_look_and_feel <- 
-  (p1 + p2) / (p3 + p4) & theme(legend.position = "none") 
-
-patchwork_for_look_and_feel
-```
-
-![](reference/figures/README-unnamed-chunk-5-1.png)
+![](reference/figures/README-unnamed-chunk-7-1.png)![](reference/figures/README-unnamed-chunk-7-2.png)
 
 # Derivative themes: blackboard, slateboard, whiteboard, glassboard, and more…
 
@@ -189,18 +260,19 @@ theme_blackboard <- function(paper = "grey20",
                              base_theme = theme_chalkboard,
                       ...){
   
-  theme_chalkboard(paper = paper, ink = ink, accent = accent, base_size = base_size,  ...)
+  theme_chalkboard(paper = paper, ink = ink, accent = accent, 
+                   base_size = base_size,  ...)
   
 }
 ```
 
 ``` r
-theme_blackboard(base_size = 12) |> theme_set()
+theme_set(theme_blackboard(base_size = 12))
 
-patchwork_for_look_and_feel
+patchwork_ensemble
 ```
 
-![](reference/figures/README-unnamed-chunk-6-1.png)
+![](reference/figures/README-unnamed-chunk-8-1.png)
 
 ``` r
 #' @export
@@ -211,51 +283,19 @@ theme_slateboard <- function(paper = "lightskyblue4",
                              base_theme = theme_chalkboard,
                       ...){
   
-  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, accent = accent, ...)
+  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, 
+                   accent = accent, ...)
   
 }
 ```
 
 ``` r
-theme_slateboard(base_size = 12) |> theme_set()
+theme_set(theme_slateboard(base_size = 12))
 
-patchwork_for_look_and_feel
+patchwork_ensemble
 ```
 
-![](reference/figures/README-unnamed-chunk-7-1.png)
-
-``` r
-#' @export
-theme_whiteboard <- function(paper = "white",
-                             ink = "grey20",
-                             accent = alpha("darkred", .7),
-                             base_size = 18,
-                             base_theme = ggplot2::theme_classic,
-             palette.colour.continuous = "viridis",
-             palette.fill.continuous = "viridis",
-             palette.colour.discrete = "viridis",
-             palette.fill.discrete = "viridis",
-                      ...){
-  
-  theme_chalkboard(paper = paper, 
-             ink = ink, 
-             base_size = base_size, 
-             accent = accent, 
-             palette.colour.continuous = palette.colour.continuous,
-             palette.fill.continuous = palette.fill.continuous,
-             palette.colour.discrete = palette.colour.discrete,
-             palette.fill.discrete = palette.fill.discrete, ...)
-  
-}
-```
-
-``` r
-theme_whiteboard(base_size = 12) |> theme_set()
-
-patchwork_for_look_and_feel
-```
-
-![](reference/figures/README-unnamed-chunk-8-1.png)
+![](reference/figures/README-unnamed-chunk-9-1.png)
 
 ``` r
 #' @export
@@ -266,18 +306,19 @@ theme_glassboard <- function(paper = alpha("white", 0), # transparent
                              base_theme = ggplot2::theme_classic,
                       ...){
   
-  base_theme(paper = paper, ink = ink, accent = accent, base_size = base_size, ...)
+  base_theme(paper = paper, ink = ink, accent = accent, 
+             base_size = base_size, ...)
   
 }
 ```
 
 ``` r
-theme_glassboard(base_size = 12) |> theme_set()
+theme_set(theme_glassboard(base_size = 12))
 
-patchwork_for_look_and_feel
+patchwork_ensemble
 ```
 
-![](reference/figures/README-unnamed-chunk-9-1.png)
+![](reference/figures/README-unnamed-chunk-10-1.png)
 
 ``` r
 theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2", 
@@ -309,21 +350,20 @@ theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2",
 ```
 
 ``` r
-theme_rosling(base_size = 12) |> 
-  theme_set()
+theme_set(theme_rosling(base_size = 12))
 
-patchwork_for_look_and_feel
+patchwork_ensemble
 ```
 
-![](reference/figures/README-unnamed-chunk-11-1.png)
+![](reference/figures/README-unnamed-chunk-12-1.png)
 
-## Minimal working package
+# Minimal working package
 
 ``` r
 devtools::create(".")
 ```
 
-### Moved functions R folder
+## Moved functions R folder
 
 ``` r
 #knitrExtra::chunk_names_get()
@@ -335,6 +375,8 @@ knitrExtra:::chunk_to_r("theme_whiteboard")
 knitrExtra:::chunk_to_r("theme_slateboard")
 knitrExtra:::chunk_to_r("theme_glassboard")
 ```
+
+## check and install
 
 ``` r
 devtools::check(pkg = ".")
@@ -349,13 +391,13 @@ devtools::install(pkg = ".", upgrade = "never")
 
 ``` r
 
-(patchwork_for_look_and_feel + 
+(patchwork_ensemble &
   theme_chalkboard()) |> 
   colorblindr::cvd_grid()
 ```
 
 ![A test with
-colorblindr](reference/figures/README-unnamed-chunk-15-1.png)
+colorblindr](reference/figures/README-unnamed-chunk-16-1.png)
 
 A test with colorblindr
 
@@ -435,7 +477,7 @@ ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
 ```
 
-![](reference/figures/README-unnamed-chunk-17-1.png)
+![](reference/figures/README-unnamed-chunk-18-1.png)
 
 ``` r
 
@@ -470,7 +512,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x12a0b16d0>
+#> <bytecode: 0x12f1384e8>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
@@ -481,4 +523,4 @@ ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
 ```
 
-![](reference/figures/README-unnamed-chunk-17-2.png)
+![](reference/figures/README-unnamed-chunk-18-2.png)
