@@ -6,7 +6,6 @@ theme_blackboard <- function(paper = "grey20",
                              base_theme = theme_chalkboard,
                       ...){
   
-  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
+  theme_chalkboard(paper = paper, ink = ink, accent = accent, base_size = base_size,  ...)
   
 }

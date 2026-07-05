@@ -1,26 +1,6 @@
-# scale_fill_viridis_c - see internals
-
-
-
-viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
-    
-  set.seed(12345)
-  
-  scales::pal_viridis(alpha, begin, end, direction, option) |> 
-      scales::col_mix(colmix, amount)
-  
-}
-
-
-viridis_pal_b <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
-  
-  pal_binned(pal_viridis(alpha, begin, end, direction, 
-        option))  |> 
-      scales::col_mix(colmix, amount)
-
-}
-  
-viridis_pal_c <- function(alpha = 1, begin = 0, end = 1, direction = 1, option = "viridis", colmix = "white", amount = 0){
+# color mixed continuous viridis pal
+viridis_pal_c <- function(alpha = 1, begin = 0, end = 1, direction = 1, 
+                          option = "viridis", colmix = "white", amount = 0){
   
   scales::pal_gradient_n(
     scales::pal_viridis(alpha = alpha, 
@@ -34,14 +14,23 @@ viridis_pal_c <- function(alpha = 1, begin = 0, end = 1, direction = 1, option =
   
 }
 
-
-chalkboard_viridis_c <- function(){
+viridis_c_chalkboard <- function(){
   
   viridis_pal_c(alpha = .4, begin = 0, end = .95, direction = 1, option = "viridis", colmix = "lightyellow", amount = .6)
   
 }
 
-chalkboard_viridis_d <- function(){
+
+# color mixed discrete viridis pal
+viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, 
+                          option = "viridis", colmix = "white", amount = 0){
+    
+  scales::pal_viridis(alpha, begin, end, direction, option) |> 
+      scales::col_mix(colmix, amount)
+  
+}
+
+viridis_d_chalkboard <- function(){
   
   viridis_pal_d(alpha = .4, begin = 0, end = .95, direction = 1, option = "viridis", colmix = "lightyellow", amount = .6)
   
@@ -57,28 +46,24 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              accent = alpha("orange", 1),
                              base_size = 20,
                              base_theme = theme_classic,
-                             palette.colour.continuous = chalkboard_viridis_c(),
-                             palette.fill.continuous = chalkboard_viridis_c(),
-                             palette.colour.discrete = chalkboard_viridis_d(),
-                             palette.fill.discrete = chalkboard_viridis_d(),
-                             palette.colour.binned = chalkboard_viridis_b(),
-                             palette.fill.binned = chalkboard_viridis_b(),
-                             # palette.size.continuous = 
+                             palette.colour.continuous = viridis_c_chalkboard(),
+                             palette.fill.continuous = viridis_c_chalkboard(),
+                             palette.colour.discrete = viridis_d_chalkboard(),
+                             palette.fill.discrete = viridis_d_chalkboard(),
                       ...){
   
   base_theme(paper = paper, 
              ink = ink, 
-             base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent#, pointshape = 21
-                              ), 
-          text = element_text(face = "plain"),
-          plot.title.position = "plot", 
+             accent = accent,
+             base_size = base_size, ...) %+replace%
+    theme(plot.title.position = "plot", 
           palette.colour.continuous = palette.colour.continuous, 
           palette.fill.continuous = palette.fill.continuous,
           palette.colour.discrete = palette.colour.discrete,
-          palette.fill.discrete = palette.fill.discrete,
-          palette.fill.ordinal = palette.colour.discrete,
-          palette.fill.ordinal = palette.colour.discrete)
+          palette.fill.discrete = palette.fill.discrete
+          # palette.fill.ordinal = palette.colour.discrete,  # wish list
+          # palette.fill.ordinal = palette.fill.discrete 
+          )
   
 }
 
