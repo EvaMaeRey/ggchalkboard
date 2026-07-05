@@ -1,7 +1,7 @@
 #' @export
 theme_whiteboard <- function(base_size = 18,
     base_theme = ggplot2::theme_classic,
-    paper = "grey98",
+    paper = "whitesmoke",
     ink = "grey20",
     accent = alpha("darkred", .7),
     palette.colour.continuous = "plasma",

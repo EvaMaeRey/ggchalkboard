@@ -77,7 +77,7 @@ So let's get to writing.  We'll start with theme_whiteboard.
 #' @export
 theme_whiteboard <- function(base_size = 18,
     base_theme = ggplot2::theme_classic,
-    paper = "grey98",
+    paper = "whitesmoke",
     ink = "grey20",
     accent = alpha("darkred", .7),
     palette.colour.continuous = "plasma",
@@ -115,7 +115,7 @@ ggplot(cars) +
   theme_whiteboard()
 
 last_plot() + 
-  theme_whiteboard(base_theme = theme_gray)
+  theme_whiteboard(base_theme = theme_minimal)
 ```
 
 <details>
