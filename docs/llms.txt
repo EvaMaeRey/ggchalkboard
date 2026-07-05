@@ -1,10 +1,32 @@
-# {ggchalkboard}
+# Intro: {ggchalkboard}
 
-ggchalkboard is a teaching package and a skill. It shows examples of how
-to extend ggplot2 themes with version 4.0.0 which has some significant
-updates: layers (geom\_ and stat\_) colors can be updated within the
-theme! It also introduces `ink` (), `paper` (the white background),
-arguments, and
+- [Intro: {ggchalkboard}](#intro-ggchalkboard)
+- [Derivative themes: blackboard, slateboard, whiteboard, glassboard,
+  and
+  more…](#derivative-themes-blackboard-slateboard-whiteboard-glassboard-and-more)
+  - [Minimal working package](#minimal-working-package)
+    - [Moved functions R folder](#moved-functions-r-folder)
+- [More considerations](#more-considerations)
+  - [colorblindness colorblindr](#colorblindness-colorblindr)
+  - [looking to the future… consider Joseph Lamarange’s work!?
+    `safe_pal`](#looking-to-the-future-consider-joseph-lamaranges-work-safe_pal)
+  - [Considerations for extenders…](#considerations-for-extenders)
+
+ggchalkboard is a teaching package, where you can browse the source code
+right from the readme and package homepage! It shows examples of how to
+extend ggplot2 themes with version 4.0.0 which has some significant
+updates.
+
+1.  4.0.0 also introduces `ink` (the black of points in default theme),
+    `paper` (the white background), and `accent` (the blue in
+    [`geom_smooth()`](https://ggplot2.tidyverse.org/reference/geom_smooth.html),
+    and a few other geoms).
+
+2.  *Geom* aesthetics can be updated via
+    [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html)! 🥳
+
+3.  Some scales can be updated via theme including discrete and
+    continuous color (and fill) scales.
 
 Thematic choices can be ‘make or break’ when it comes to audience. I
 don’t consider myself gifted when it comes to thematic choices in
@@ -33,40 +55,7 @@ ggplot2::theme_gray() |> length()
 So let’s get to writing our theme, `theme_chalkboard`.
 
 ``` r
-theme_classic %>% args()
-#> function (base_size = 11, base_family = "", header_family = NULL, 
-#>     base_line_size = base_size/22, base_rect_size = base_size/22, 
-#>     ink = "black", paper = "white", accent = "#3366FF") 
-#> NULL
-
-tc <- theme_classic()
-```
-
-``` r
-# scale_fill_viridis_c - see internals
-
-# discrete viridis pal
-viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, 
-                          option = "viridis", colmix = "white", amount = 0){
-    
-  set.seed(12345)
-  
-  scales::pal_viridis(alpha, begin, end, direction, option) |> 
-      scales::col_mix(colmix, amount)
-  
-}
-
-# binned viridis pal
-viridis_pal_b <- function(alpha = 1, begin = 0, end = 1, direction = 1, 
-                          option = "viridis", colmix = "white", amount = 0){
-  
-  pal_binned(pal_viridis(alpha, begin, end, direction, 
-        option))  |> 
-      scales::col_mix(colmix, amount)
-
-}
-  
-# continuous viridis pal
+# color mixed continuous viridis pal
 viridis_pal_c <- function(alpha = 1, begin = 0, end = 1, direction = 1, 
                           option = "viridis", colmix = "white", amount = 0){
   
@@ -82,14 +71,23 @@ viridis_pal_c <- function(alpha = 1, begin = 0, end = 1, direction = 1,
   
 }
 
-
-chalkboard_viridis_c <- function(){
+viridis_c_chalkboard <- function(){
   
   viridis_pal_c(alpha = .4, begin = 0, end = .95, direction = 1, option = "viridis", colmix = "lightyellow", amount = .6)
   
 }
 
-chalkboard_viridis_d <- function(){
+
+# color mixed discrete viridis pal
+viridis_pal_d <- function(alpha = 1, begin = 0, end = 1, direction = 1, 
+                          option = "viridis", colmix = "white", amount = 0){
+    
+  scales::pal_viridis(alpha, begin, end, direction, option) |> 
+      scales::col_mix(colmix, amount)
+  
+}
+
+viridis_d_chalkboard <- function(){
   
   viridis_pal_d(alpha = .4, begin = 0, end = .95, direction = 1, option = "viridis", colmix = "lightyellow", amount = .6)
   
@@ -105,28 +103,24 @@ theme_chalkboard <- function(paper = "darkseagreen4",
                              accent = alpha("orange", 1),
                              base_size = 20,
                              base_theme = theme_classic,
-                             palette.colour.continuous = chalkboard_viridis_c(),
-                             palette.fill.continuous = chalkboard_viridis_c(),
-                             palette.colour.discrete = chalkboard_viridis_d(),
-                             palette.fill.discrete = chalkboard_viridis_d(),
-                             palette.colour.binned = chalkboard_viridis_b(),
-                             palette.fill.binned = chalkboard_viridis_b(),
-                             # palette.size.continuous = 
+                             palette.colour.continuous = viridis_c_chalkboard(),
+                             palette.fill.continuous = viridis_c_chalkboard(),
+                             palette.colour.discrete = viridis_d_chalkboard(),
+                             palette.fill.discrete = viridis_d_chalkboard(),
                       ...){
   
   base_theme(paper = paper, 
              ink = ink, 
-             base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent#, pointshape = 21
-                              ), 
-          text = element_text(face = "plain"),
-          plot.title.position = "plot", 
+             accent = accent,
+             base_size = base_size, ...) %+replace%
+    theme(plot.title.position = "plot", 
           palette.colour.continuous = palette.colour.continuous, 
           palette.fill.continuous = palette.fill.continuous,
           palette.colour.discrete = palette.colour.discrete,
-          palette.fill.discrete = palette.fill.discrete,
-          palette.fill.ordinal = palette.colour.discrete,
-          palette.fill.ordinal = palette.colour.discrete)
+          palette.fill.discrete = palette.fill.discrete
+          # palette.fill.ordinal = palette.colour.discrete,  # wish list
+          # palette.fill.ordinal = palette.fill.discrete 
+          )
   
 }
 ```
@@ -146,7 +140,7 @@ last_plot() +
   labs(title = "New theme demonstration")
 ```
 
-![](reference/figures/README-unnamed-chunk-5-1.png)![](reference/figures/README-unnamed-chunk-5-2.png)
+![](reference/figures/README-unnamed-chunk-4-1.png)![](reference/figures/README-unnamed-chunk-4-2.png)
 
 ``` r
 theme_chalkboard(base_size = 12) |> theme_set()
@@ -176,12 +170,114 @@ p4 <- ggplot(diamonds) +
   labs(title = "ordinal")
 
 library(patchwork)
-composite <- (p1 + p2) / (p3 + p4) & theme(legend.position = "none") 
+patchwork_for_look_and_feel <- 
+  (p1 + p2) / (p3 + p4) & theme(legend.position = "none") 
 
-composite
+patchwork_for_look_and_feel
+```
+
+![](reference/figures/README-unnamed-chunk-5-1.png)
+
+# Derivative themes: blackboard, slateboard, whiteboard, glassboard, and more…
+
+``` r
+#' @export
+theme_blackboard <- function(paper = "grey20",
+                             ink = alpha("whitesmoke", .6),
+                             accent = alpha("palevioletred3", .8),
+                             base_size = 18,
+                             base_theme = theme_chalkboard,
+                      ...){
+  
+  theme_chalkboard(paper = paper, ink = ink, accent = accent, base_size = base_size,  ...)
+  
+}
+```
+
+``` r
+theme_blackboard(base_size = 12) |> theme_set()
+
+patchwork_for_look_and_feel
 ```
 
 ![](reference/figures/README-unnamed-chunk-6-1.png)
+
+``` r
+#' @export
+theme_slateboard <- function(paper = "lightskyblue4",
+                             ink = alpha("whitesmoke", .6),
+                             accent = alpha("palevioletred3", .8),
+                             base_size = 18,
+                             base_theme = theme_chalkboard,
+                      ...){
+  
+  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, accent = accent, ...)
+  
+}
+```
+
+``` r
+theme_slateboard(base_size = 12) |> theme_set()
+
+patchwork_for_look_and_feel
+```
+
+![](reference/figures/README-unnamed-chunk-7-1.png)
+
+``` r
+#' @export
+theme_whiteboard <- function(paper = "white",
+                             ink = "grey20",
+                             accent = alpha("darkred", .7),
+                             base_size = 18,
+                             base_theme = ggplot2::theme_classic,
+             palette.colour.continuous = "viridis",
+             palette.fill.continuous = "viridis",
+             palette.colour.discrete = "viridis",
+             palette.fill.discrete = "viridis",
+                      ...){
+  
+  theme_chalkboard(paper = paper, 
+             ink = ink, 
+             base_size = base_size, 
+             accent = accent, 
+             palette.colour.continuous = palette.colour.continuous,
+             palette.fill.continuous = palette.fill.continuous,
+             palette.colour.discrete = palette.colour.discrete,
+             palette.fill.discrete = palette.fill.discrete, ...)
+  
+}
+```
+
+``` r
+theme_whiteboard(base_size = 12) |> theme_set()
+
+patchwork_for_look_and_feel
+```
+
+![](reference/figures/README-unnamed-chunk-8-1.png)
+
+``` r
+#' @export
+theme_glassboard <- function(paper = alpha("white", 0), # transparent
+                             ink = alpha("black", .7),
+                             accent = alpha("darkred", .7),
+                             base_size = 18,
+                             base_theme = ggplot2::theme_classic,
+                      ...){
+  
+  base_theme(paper = paper, ink = ink, accent = accent, base_size = base_size, ...)
+  
+}
+```
+
+``` r
+theme_glassboard(base_size = 12) |> theme_set()
+
+patchwork_for_look_and_feel
+```
+
+![](reference/figures/README-unnamed-chunk-9-1.png)
 
 ``` r
 theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2", 
@@ -210,115 +306,16 @@ theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2",
           )
   
 }
-
-theme_rosling(base_size = 12) |> theme_set()
-
-composite
-```
-
-![](reference/figures/README-unnamed-chunk-7-1.png)
-
-``` r
-#' @export
-theme_blackboard <- function(paper = "grey20",
-                             ink = alpha("whitesmoke", .6),
-                             accent = alpha("palevioletred3", .8),
-                             base_size = 18,
-                             base_theme = theme_chalkboard,
-                      ...){
-  
-  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
-  
-}
 ```
 
 ``` r
-theme_blackboard(base_size = 12) |> theme_set()
+theme_rosling(base_size = 12) |> 
+  theme_set()
 
-composite
-```
-
-![](reference/figures/README-unnamed-chunk-8-1.png)
-
-``` r
-#' @export
-theme_slateboard <- function(paper = "lightskyblue4",
-                             ink = alpha("whitesmoke", .6),
-                             accent = alpha("palevioletred3", .8),
-                             base_size = 18,
-                             base_theme = theme_chalkboard,
-                      ...){
-  
-  theme_chalkboard(paper = paper, ink = ink, base_size = base_size, accent = accent, ...)
-  
-}
-```
-
-``` r
-theme_slateboard(base_size = 12) |> theme_set()
-
-composite
-```
-
-![](reference/figures/README-unnamed-chunk-9-1.png)
-
-``` r
-#' @export
-theme_whiteboard <- function(paper = "white",
-                             ink = alpha("black", .9),
-                             accent = alpha("darkred", .9),
-                             base_size = 18,
-                             base_theme = ggplot2::theme_classic,
-                      ...){
-  
-  theme_chalkboard(paper = paper, 
-             ink = ink, 
-             base_size = base_size, accent = accent, ...)
-  
-}
-```
-
-``` r
-theme_whiteboard(base_size = 12) |> theme_set()
-
-composite
-```
-
-![](reference/figures/README-unnamed-chunk-10-1.png)
-
-``` r
-#' @export
-theme_glassboard <- function(paper = alpha("white", 0),
-                             ink = alpha("black", .9),
-                             accent = alpha("darkred", .9),
-                             base_size = 18,
-                             base_theme = ggplot2::theme_classic,
-                      ...){
-  
-  base_theme(paper = paper, ink = ink, base_size = base_size, ...) +
-    theme(geom = element_geom(accent = accent))
-  
-}
-```
-
-``` r
-theme_glassboard(base_size = 12) |> theme_set()
-
-composite
+patchwork_for_look_and_feel
 ```
 
 ![](reference/figures/README-unnamed-chunk-11-1.png)
-
-# check for colorblindness…
-
-``` r
-# remotes::install_github("clauswilke/colorblindr")
-colorblindr::cvd_grid(last_plot())
-```
-
-Color and fill scale are probably of greater interest, I know. Something
-to come back to.
 
 ## Minimal working package
 
@@ -329,14 +326,9 @@ devtools::create(".")
 ### Moved functions R folder
 
 ``` r
-knitrExtra::chunk_names_get()
-#>  [1] "unnamed-chunk-1"  "unnamed-chunk-2"  "unnamed-chunk-3"  "unnamed-chunk-4" 
-#>  [5] "theme_chalkboard" "unnamed-chunk-5"  "unnamed-chunk-6"  "unnamed-chunk-7" 
-#>  [9] "theme_blackboard" "unnamed-chunk-8"  "theme_slateboard" "unnamed-chunk-9" 
-#> [13] "theme_whiteboard" "unnamed-chunk-10" "theme_glassboard" "unnamed-chunk-11"
-#> [17] "unnamed-chunk-12" "unnamed-chunk-13" "unnamed-chunk-14" "unnamed-chunk-15"
-#> [21] "unnamed-chunk-16" "unnamed-chunk-17"
-library(tidyverse)
+#knitrExtra::chunk_names_get()
+usethis::use_package("ggplot2")
+
 knitrExtra:::chunk_to_r("theme_chalkboard")
 knitrExtra:::chunk_to_r("theme_blackboard")
 knitrExtra:::chunk_to_r("theme_whiteboard")
@@ -349,7 +341,28 @@ devtools::check(pkg = ".")
 devtools::install(pkg = ".", upgrade = "never") 
 ```
 
-# looking to the future… consider Joseph Lamarange’s work!? `safe_pal`
+# More considerations
+
+## colorblindness colorblindr
+
+`remotes::install_github("clauswilke/colorblindr")`
+
+``` r
+
+(patchwork_for_look_and_feel + 
+  theme_chalkboard()) |> 
+  colorblindr::cvd_grid()
+```
+
+![A test with
+colorblindr](reference/figures/README-unnamed-chunk-15-1.png)
+
+A test with colorblindr
+
+Color and fill scale are probably of greater interest, I know. Something
+to come back to.
+
+## looking to the future… consider Joseph Lamarange’s work!? `safe_pal`
 
 ``` r
 
@@ -381,7 +394,7 @@ safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alp
 }
 ```
 
-# Considerations for extenders…
+## Considerations for extenders…
 
 What can be done about layer from a ggplot2 extension that has hard
 coded aesthetic defaults?
@@ -457,7 +470,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x12fbd2a20>
+#> <bytecode: 0x12a0b16d0>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data

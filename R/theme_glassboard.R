@@ -6,6 +6,7 @@ theme_glassboard <- function(paper = alpha("white", 0), # transparent
                              base_theme = ggplot2::theme_classic,
                       ...){
   
-  base_theme(paper = paper, ink = ink, accent = accent, base_size = base_size, ...)
+  base_theme(paper = paper, ink = ink, accent = accent, 
+             base_size = base_size, ...)
   
 }

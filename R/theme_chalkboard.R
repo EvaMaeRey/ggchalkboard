@@ -61,8 +61,6 @@ theme_chalkboard <- function(paper = "darkseagreen4",
           palette.fill.continuous = palette.fill.continuous,
           palette.colour.discrete = palette.colour.discrete,
           palette.fill.discrete = palette.fill.discrete
-          # palette.fill.ordinal = palette.colour.discrete,  # wish list
-          # palette.fill.ordinal = palette.fill.discrete 
           )
   
 }
