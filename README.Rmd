@@ -144,7 +144,7 @@ p4 <- ggplot(diamonds) +
   aes(x = cut, 
       fill = cut) + 
   geom_bar() + 
-  labs(title = "ordinal")
+  labs(title = "ordinal (not yet accessible from theme)")
 
 library(patchwork)
 patchwork_ensemble <- 
@@ -317,8 +317,9 @@ patchwork_ensemble
 
 ```{r theme_glassboard}
 #' @export
-theme_glassboard <- function(paper = alpha("white", 0), # transparent
+theme_glassboard <- function(
                              ink = alpha("black", .7),
+                             paper = alpha("white", 0), # transparent
                              accent = alpha("darkred", .7),
                              base_size = 18,
                              base_theme = ggplot2::theme_classic,
@@ -441,7 +442,9 @@ Color and fill scale are probably of greater interest, I know. Something to come
 
 
 
-## looking to the future... consider Joseph Lamarange's work!? `safe_pal`
+## looking to the future... consider Joseph Lamarange's work: `safe_pal`
+
+<details>
 
 ```{r}
 
@@ -476,7 +479,7 @@ safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alp
 
 ```
 
-
+</details>
 
 
 

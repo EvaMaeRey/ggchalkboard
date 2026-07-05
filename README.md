@@ -12,7 +12,7 @@
   - [check and install](#check-and-install)
 - [More considerations](#more-considerations)
   - [colorblindness colorblindr](#colorblindness-colorblindr)
-  - [looking to the future… consider Joseph Lamarange’s work!?
+  - [looking to the future… consider Joseph Lamarange’s work:
     `safe_pal`](#looking-to-the-future-consider-joseph-lamaranges-work-safe_pal)
   - [Considerations for extenders…](#considerations-for-extenders)
 
@@ -167,7 +167,7 @@ p4 <- ggplot(diamonds) +
   aes(x = cut, 
       fill = cut) + 
   geom_bar() + 
-  labs(title = "ordinal")
+  labs(title = "ordinal (not yet accessible from theme)")
 
 library(patchwork)
 patchwork_ensemble <- 
@@ -325,8 +325,9 @@ patchwork_ensemble
 
 ``` r
 #' @export
-theme_glassboard <- function(paper = alpha("white", 0), # transparent
+theme_glassboard <- function(
                              ink = alpha("black", .7),
+                             paper = alpha("white", 0), # transparent
                              accent = alpha("darkred", .7),
                              base_size = 18,
                              base_theme = ggplot2::theme_classic,
@@ -445,7 +446,9 @@ A test with colorblindr
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
 
-## looking to the future… consider Joseph Lamarange’s work!? `safe_pal`
+## looking to the future… consider Joseph Lamarange’s work: `safe_pal`
+
+<details>
 
 ``` r
 
@@ -476,6 +479,8 @@ safe_pal_mixer <- function (reverse = FALSE, b = "lightyellow", amount = .5, alp
     }
 }
 ```
+
+</details>
 
 ## Considerations for extenders…
 
@@ -553,7 +558,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x125cc9040>
+#> <bytecode: 0x1230b5078>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data

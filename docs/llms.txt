@@ -149,7 +149,7 @@ p4 <- ggplot(diamonds) +
   aes(x = cut, 
       fill = cut) + 
   geom_bar() + 
-  labs(title = "ordinal")
+  labs(title = "ordinal (not yet accessible from theme)")
 
 library(patchwork)
 patchwork_ensemble <- 
@@ -506,7 +506,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x125cc9040>
+#> <bytecode: 0x1371b8320>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data

@@ -1,6 +1,7 @@
 #' @export
-theme_glassboard <- function(paper = alpha("white", 0), # transparent
+theme_glassboard <- function(
                              ink = alpha("black", .7),
+                             paper = alpha("white", 0), # transparent
                              accent = alpha("darkred", .7),
                              base_size = 18,
                              base_theme = ggplot2::theme_classic,
