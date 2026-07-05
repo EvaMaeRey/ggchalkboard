@@ -81,7 +81,7 @@ So let’s get to writing. We’ll start with theme_whiteboard.
 #' @export
 theme_whiteboard <- function(base_size = 18,
     base_theme = ggplot2::theme_classic,
-    paper = "grey98",
+    paper = "whitesmoke",
     ink = "grey20",
     accent = alpha("darkred", .7),
     palette.colour.continuous = "plasma",
@@ -121,7 +121,7 @@ ggplot(cars) +
 ``` r
 
 last_plot() + 
-  theme_whiteboard(base_theme = theme_gray)
+  theme_whiteboard(base_theme = theme_minimal)
 ```
 
 ![](reference/figures/README-unnamed-chunk-4-2.png)
@@ -515,7 +515,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x129329b28>
+#> <bytecode: 0x12f6705c0>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
