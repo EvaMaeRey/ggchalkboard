@@ -350,7 +350,7 @@ theme_set(theme_rosling(base_size = 10))
 patchwork_ensemble
 ```
 
-![](reference/figures/README-unnamed-chunk-12-1.png)
+![](reference/figures/README-unnamed-chunk-11-1.png)
 
 # Minimal working package
 
@@ -364,11 +364,16 @@ devtools::create(".")
 #knitrExtra::chunk_names_get()
 usethis::use_package("ggplot2")
 
+
 knitrExtra:::chunk_to_r("theme_chalkboard")
 knitrExtra:::chunk_to_r("theme_blackboard")
 knitrExtra:::chunk_to_r("theme_whiteboard")
 knitrExtra:::chunk_to_r("theme_slateboard")
 knitrExtra:::chunk_to_r("theme_glassboard")
+knitrExtra:::chunk_to_r("theme_rosling")
+
+
+devtools::document()
 ```
 
 ## check and install
@@ -392,7 +397,7 @@ devtools::install(pkg = ".", upgrade = "never")
 ```
 
 ![A test with
-colorblindr](reference/figures/README-unnamed-chunk-16-1.png)
+colorblindr](reference/figures/README-unnamed-chunk-15-1.png)
 
 A test with colorblindr
 
@@ -472,7 +477,7 @@ ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
 ```
 
-![](reference/figures/README-unnamed-chunk-18-1.png)
+![](reference/figures/README-unnamed-chunk-17-1.png)
 
 ``` r
 
@@ -507,7 +512,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x1230b5078>
+#> <bytecode: 0x13d882000>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
@@ -518,4 +523,4 @@ ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
   stat_stratum(geom = "text", aes(label = after_stat(stratum))) 
 ```
 
-![](reference/figures/README-unnamed-chunk-18-2.png)
+![](reference/figures/README-unnamed-chunk-17-2.png)
