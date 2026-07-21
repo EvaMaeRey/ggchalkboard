@@ -344,7 +344,7 @@ patchwork_ensemble
 
 <details>
 
-```{r}
+```{r theme_rosling}
 theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2", 
                           accent = "orange", 
                           base_size = 20,
@@ -371,6 +371,7 @@ theme_rosling <- function(paper = alpha("black", .9), ink = "cadetblue2",
           )
   
 }
+
 ```
 
 
@@ -402,11 +403,16 @@ devtools::create(".")
 #knitrExtra::chunk_names_get()
 usethis::use_package("ggplot2")
 
+
 knitrExtra:::chunk_to_r("theme_chalkboard")
 knitrExtra:::chunk_to_r("theme_blackboard")
 knitrExtra:::chunk_to_r("theme_whiteboard")
 knitrExtra:::chunk_to_r("theme_slateboard")
 knitrExtra:::chunk_to_r("theme_glassboard")
+knitrExtra:::chunk_to_r("theme_rosling")
+
+
+devtools::document()
 ```
 
 

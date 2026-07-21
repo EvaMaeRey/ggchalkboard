@@ -1,5 +1,5 @@
 Package: ggchalkboard
-Title: What the Package Does (One Line, Title Case)
+Title: Styles Plots to Look Like Chalkboards
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Evangeline",
@@ -12,7 +12,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 2.10)
 Imports: 

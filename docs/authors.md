@@ -7,11 +7,11 @@
 
 ## Citation
 
-Reynolds E (2026). *ggchalkboard: What the Package Does (One Line, Title
-Case)*. R package version 0.0.0.9000.
+Reynolds E (2026). *ggchalkboard: Styles Plots to Look Like
+Chalkboards*. R package version 0.0.0.9000.
 
     @Manual{,
-      title = {ggchalkboard: What the Package Does (One Line, Title Case)},
+      title = {ggchalkboard: Styles Plots to Look Like Chalkboards},
       author = {Evangeline Reynolds},
       year = {2026},
       note = {R package version 0.0.0.9000},

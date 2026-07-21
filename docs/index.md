@@ -13,7 +13,7 @@
   - [check and install](#check-and-install)
 - [More considerations](#more-considerations)
   - [colorblindness colorblindr](#colorblindness-colorblindr)
-  - [looking to the future… consider Joseph Lamarange’s work!?
+  - [looking to the future… consider Joseph Lamarange’s work:
     `safe_pal`](#looking-to-the-future-consider-joseph-lamaranges-work-safe_pal)
   - [Considerations for extenders…](#considerations-for-extenders)
 
@@ -293,8 +293,9 @@ patchwork_ensemble
 
 ``` r
 #' @export
-theme_glassboard <- function(paper = alpha("white", 0), # transparent
+theme_glassboard <- function(
                              ink = alpha("black", .7),
+                             paper = alpha("white", 0), # transparent
                              accent = alpha("darkred", .7),
                              base_size = 18,
                              base_theme = ggplot2::theme_classic,
@@ -398,7 +399,7 @@ A test with colorblindr
 Color and fill scale are probably of greater interest, I know. Something
 to come back to.
 
-## looking to the future… consider Joseph Lamarange’s work!? `safe_pal`
+## looking to the future… consider Joseph Lamarange’s work: `safe_pal`
 
 ``` r
 
@@ -506,7 +507,7 @@ geom_stratum
 #>         inherit.aes = inherit.aes, params = list(width = width, 
 #>             na.rm = na.rm, ...))
 #> }
-#> <bytecode: 0x1371b8320>
+#> <bytecode: 0x1230b5078>
 #> <environment: namespace:ggalluvial>
 
 ggplot(data = titanic_flat) + # Ok Lets look at this titanic data
